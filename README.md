@@ -6,8 +6,9 @@ Doppelganger is not a clone of you.
 It is a reflection of the intention you choose to convey.
 
 It does not connect your AI accounts.  
-It does not merge your memories.  
-It does not speak on your behalf.
+It does not scrape conversations.  
+It does not upload by default.  
+It does not act on your behalf.
 
 It prepares contexts, boundaries, and exchanges that you choose to share with an AI.
 
@@ -71,3 +72,18 @@ and `docs/`. Deferred and explicitly tracked (not silently dropped):
 `packages/browser-extension/`, `packages/adapters/mcp/`, a real
 `packages/adapters/quark/` deposit, vault encryption, and the cross-AI
 observatory. See `CHANGELOG.md` for the full breakdown.
+
+## Contributing
+
+See `CONTRIBUTING.md` before opening a PR — it lists what gets rejected
+(silent scraping, default uploads, authoritative memory, hidden
+agentivity) regardless of code quality.
+
+## Security
+
+See `SECURITY.md` to report a vulnerability, and `docs/threat-model.md`
+for what this project does and does not do by design.
+
+## License
+
+Apache License 2.0 — see `LICENSE`.
