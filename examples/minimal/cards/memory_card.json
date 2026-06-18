@@ -1,0 +1,12 @@
+{
+  "id": "mem_8a1f2c3d9b00",
+  "kind": "memory_card",
+  "label": "Style de réponse",
+  "content": "Répondre en couches, éviter les réponses génériques.",
+  "sensitivity": "normal",
+  "deep_allowed": false,
+  "authority": false,
+  "revocable": true,
+  "created_at": "2026-06-18T10:01:00.000Z",
+  "updated_at": "2026-06-18T10:01:00.000Z"
+}
