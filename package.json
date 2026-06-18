@@ -2,7 +2,11 @@
   "name": "doppelganger",
   "version": "0.1.0",
   "description": "A local-first continuity toolkit for carrying user-approved AI context between assistants.",
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Djabolum/Doppelganger.git"
+  },
   "private": true,
   "type": "commonjs",
   "bin": {

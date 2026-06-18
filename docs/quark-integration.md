@@ -31,7 +31,7 @@ pointing here and to `packages/adapters/quark/README.md`.
 ## Why a real deposit is deferred, not stubbed silently
 
 A real deposit needs intake endpoints that do not exist yet on the Quark-AI
-backend (`/opt/quark-ai`). Today, Quark's Nautilus API exposes
+backend. Today, Quark's Nautilus API exposes
 fossil-shaped endpoints (`/api/nautilus/fossils/fossilize`,
 `/api/nautilus/fossils`, `/api/nautilus/fossils/{id}`,
 `/api/nautilus/versions`) built around `fossil_type`, `source_prompt`,
