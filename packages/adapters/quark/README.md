@@ -10,7 +10,7 @@ network call, no Quark dependency. It is a preview only.
 **What is explicitly deferred, and why:** a real `doppel quark deposit
 --confirm` requires intake endpoints (`POST /api/quark/intake/memory-card`,
 `/boundary-card`, `/handoff-card`, `/fossil-trace`, `/trust-receipt`) that do
-not exist yet on the Quark-AI backend (`/opt/quark-ai`) — only
+not exist yet on the Quark-AI backend — only
 `/api/nautilus/fossils/fossilize` and friends exist today, and mapping
 straight into those would blur fossil/memory-card/handoff-card/receipt into
 one bucket, which the doctrine (`docs/quark-integration.md`) explicitly
