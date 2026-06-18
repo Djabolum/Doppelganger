@@ -1,0 +1,12 @@
+{
+  "id": "bnd_4e7d0a1c5f33",
+  "kind": "boundary_card",
+  "label": "Non-diagnostic",
+  "content": "transformer mes traces ou émotions en diagnostic",
+  "sensitivity": "normal",
+  "deep_allowed": false,
+  "authority": false,
+  "revocable": true,
+  "created_at": "2026-06-18T10:02:00.000Z",
+  "updated_at": "2026-06-18T10:02:00.000Z"
+}

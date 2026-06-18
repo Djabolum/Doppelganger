@@ -1,0 +1,105 @@
+# Changelog
+
+## 2026-06-18 — V1 MVP
+
+First real implementation, on top of a repo that previously had only a
+`README.md` and an empty scaffold (`docs/`, `schemas/`, `packages/`,
+`examples/` all zero-byte placeholders, plus one filename bug).
+
+### Fixed before building
+
+- `schemas/card.schema.jsoncard.schema.json` → renamed to
+  `schemas/card.schema.json` (duplicated extension typo).
+- `packages/core/adapters/file-export/` → moved to `packages/adapters/file-export/`
+  (adapters belong beside `core`, not nested under it).
+- `packages/core/cli/index.ts` → moved to `packages/cli/index.ts` (the CLI is
+  its own package, not part of core).
+
+### Shipped
+
+- **`packages/core`** — `identity.ts`, `vault.ts`, `cards.ts`, `scopes.ts`,
+  `context_pack.ts`, `handoff.ts`, `receipts.ts`, `policy.ts`. Zero runtime
+  dependencies — only Node's `fs`/`path`/`crypto`/`child_process`.
+  `policy.ts` actively asserts `authority: false` / `revocable: true` on
+  every card, export, and deposit envelope; it does not just document the
+  invariant.
+- **`packages/cli`** — the `doppel` binary: `init`, `card add`, `card list`,
+  `context build`, `handoff create`, `handoff list`, `handoff export`,
+  `receipt list`, `quark dry-run`, `status`, `inspect`. `quark deposit`
+  exists as a command name and refuses to run (exit 1, points to
+  `docs/quark-integration.md`) — see "Deferred" below.
+- **`packages/adapters/file-export`** — markdown/JSON export to a chosen
+  path, best-effort clipboard copy (`pbcopy`/`wl-copy`/`xclip`/`clip`,
+  fails soft if none is found).
+- **`schemas/`** — the four V0 schemas: `manifest`, `card`, `context_pack`,
+  `trust_receipt` (JSON Schema 2020-12).
+- **`examples/`** — `minimal/` (manifest + two cards + the exact context
+  pack they produce), `project_handoff/` (handoff card + its markdown
+  export), `quark_deposit/` (a fossil_trace card + the dry-run preview it
+  produces). All three were generated from the real CLI output, then
+  checked back into the repo as fixtures — not hand-typed guesses.
+- **`docs/`** — `doctrine.md` (the 10 invariants + the "objects that must
+  never be confused" table), `threat-model.md`, `scopes.md`,
+  `quark-integration.md`, `browser-extension-policy.md`, `glossary.md`.
+- **`README.md`** — added a Quickstart and a Status section; kept the
+  original positioning text as-is.
+- **`package.json` / `tsconfig.json`** — did not exist before. TypeScript
+  5.5 + `@types/node` as the only devDependencies; compiles clean
+  (`npx tsc -p tsconfig.json`, zero errors).
+
+### Verified, not just written
+
+Ran the full command set end-to-end in a scratch vault (`/tmp/doppel-smoke`,
+deleted after): `init` → `card add` (memory + boundary + fossil) →
+`context build --scope minimal` (output byte-for-byte matches
+`examples/minimal/context_pack.md`) → `handoff create` / `handoff export` →
+`quark dry-run` (fossil and handoff) → `quark deposit --confirm` (refuses,
+exit 1) → `inspect` / `status` / `receipt list`. Two real bugs were found
+and fixed during this pass, not left in:
+
+1. `quark dry-run --type fossil` printed `kind: fossil_card` instead of the
+   real card kind `fossil_trace` (string concatenation bug in
+   `cmdQuarkDryRun`). Fixed, and a `--type`/actual-card-kind mismatch check
+   was added so a wrong `--type` now fails loudly instead of silently
+   reporting the wrong kind.
+2. Any thrown error (e.g. running a command against an uninitialized vault)
+   printed a raw Node stack trace instead of a clean `doppel: ...` message.
+   `main()` is now wrapped in try/catch.
+
+### Hardened after review — memory_card vs fossil_trace
+
+Flagged in review: nothing stopped `doppel card add fossil --content "..."`
+from attaching free narrative text to a `fossil_trace`, which would quietly
+re-create "user memory" inside the fossil store under a different kind —
+exactly what invariants #3 and #9 (`docs/doctrine.md`) exist to prevent.
+
+Fixed at the source, not filtered later: `packages/core/cards.ts::createCard`
+now throws if `content` is passed for `fossil_trace`. A fossil's `label`
+must name a structural pattern; it cannot restate a preference in prose.
+`docs/doctrine.md` gained a dedicated section on this (it was previously
+only implied by the four-object table), and `docs/threat-model.md` gained a
+matching row. Verified: `doppel card add fossil --label "x" --content "..."`
+now exits 1 with a clear message; the same command without `--content`
+still succeeds.
+
+### Deferred — explicitly, not silently
+
+Per the original MVP scope, these are tracked, not forgotten:
+
+- **`packages/browser-extension/`** — empty, with a `README.md` explaining
+  why (V1.1, must follow `docs/browser-extension-policy.md`).
+- **`packages/adapters/mcp/`** — empty, with a `README.md` explaining why
+  (must come after the CLI's scope filtering has real usage behind it).
+- **`packages/adapters/quark/`** — no HTTP client. `README.md` explains
+  that the Quark-AI backend does not yet expose the
+  `POST /api/quark/intake/*` endpoints a real deposit would need; building
+  those is a Quark-side chantier, documented in `docs/quark-integration.md`.
+- **`schemas/handoff_card.schema.json`, `fossil_trace.schema.json`,
+  `quark_deposit.schema.json`** — not written. The original design
+  explicitly scoped V0 to the four schemas that exist; these three were
+  named as "next", once the Quark-side shapes stop being speculative.
+- **Encrypted vault** — V0 is plain JSON/JSONL files under `.doppelganger/`,
+  as the original design specified ("V0 local file storage, V1 encrypted
+  vault — don't block on perfect encryption").
+- **Cross-AI observatory (V5 in the source design)** — not started. Needs
+  the handoff/context-pack rail to have real multi-assistant usage first.
