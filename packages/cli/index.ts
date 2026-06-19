@@ -24,13 +24,21 @@ import { ScopeName, SCOPES } from "../core/scopes";
 import { buildContextPack, renderContextPackMarkdown } from "../core/context_pack";
 import { createHandoffCard, renderHandoffMarkdown } from "../core/handoff";
 import { createReceipt, formatReceiptLine } from "../core/receipts";
-import { buildContinuityEnvelope } from "../core/policy";
+import { buildContinuityEnvelope, assertContinuityEnvelope } from "../core/policy";
 import { exportMarkdown, exportJson, copyToClipboard } from "../adapters/file-export";
 
 interface ParsedArgs {
   positional: string[];
   flags: Map<string, string[]>;
 }
+
+/**
+ * Flags that never take a value. Every other --flag always consumes the
+ * next token as its value, even if that token itself starts with "--" —
+ * otherwise a --content/--label value the user wrote starting with "--"
+ * would be silently dropped and replaced with the literal string "true".
+ */
+const BOOLEAN_FLAGS = new Set(["deep-allowed", "no-receipt", "confirm"]);
 
 function parseArgs(argv: string[]): ParsedArgs {
   const positional: string[] = [];
@@ -40,16 +48,19 @@ function parseArgs(argv: string[]): ParsedArgs {
     const token = argv[i];
     if (token.startsWith("--")) {
       const key = token.slice(2);
-      const next = argv[i + 1];
-      if (next !== undefined && !next.startsWith("--")) {
-        const list = flags.get(key) ?? [];
-        list.push(next);
-        flags.set(key, list);
-        i += 2;
-      } else {
-        flags.set(key, flags.get(key) ?? ["true"]);
+      if (BOOLEAN_FLAGS.has(key)) {
+        flags.set(key, ["true"]);
         i += 1;
+        continue;
       }
+      const next = argv[i + 1];
+      if (next === undefined) {
+        throw new Error(`cli: --${key} expects a value`);
+      }
+      const list = flags.get(key) ?? [];
+      list.push(next);
+      flags.set(key, list);
+      i += 2;
     } else {
       positional.push(token);
       i += 1;
@@ -228,6 +239,8 @@ function cmdHandoffExport(args: ParsedArgs): void {
     const clipboard = copyToClipboard(markdown);
     if (clipboard.copied) {
       process.stderr.write(`\nCopied to clipboard via ${clipboard.tool}.\n`);
+    } else {
+      process.stderr.write(`\nNot copied to clipboard: ${clipboard.reason}\n`);
     }
   }
 }
@@ -273,6 +286,7 @@ function cmdQuarkDryRun(args: ParsedArgs): void {
   }
 
   const envelope = buildContinuityEnvelope(rawTextIncluded);
+  assertContinuityEnvelope(envelope, "quark dry-run");
   const preview = {
     would_send: true,
     kind,

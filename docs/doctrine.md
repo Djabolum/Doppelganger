@@ -41,10 +41,14 @@ These must never fuse into one object. If they do, Quark-AI (or any other
 host receiving fossils) quietly becomes "user memory" again under a
 different name — exactly the thing invariant #3 (`Doppelganger != full
 memory`) and invariant #9 (`Fossil trace != raw conversation`) exist to
-prevent. This is not just a naming convention: `packages/core/cards.ts::createCard`
-throws if a caller tries to attach `content` (free narrative text) to a
-`fossil_trace` card. A fossil's `label` must name a pattern, not restate a
-preference in prose.
+prevent. This is not just a naming convention: `packages/core/policy.ts::assertCardInvariants`
+rejects `content` (free narrative text) on a `fossil_trace` card, and caps
+its `label` at 60 characters — a fossil's `label` must name a pattern, not
+restate a preference in prose, so a narrative sentence cannot be smuggled
+through the one field the `content` check doesn't cover. `cards.ts::createCard`
+calls this check when a card is first built; `vault.ts::saveCard` calls it
+again at the write boundary, so this holds regardless of how a `Card` object
+was constructed.
 
 ## Objects that must never be confused
 

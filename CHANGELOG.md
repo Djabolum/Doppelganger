@@ -1,5 +1,73 @@
 # Changelog
 
+## 2026-06-19 — Pre-merge audit: policy chokepoint, scope leak, CLI parsing
+
+Full code review pass (10 angles, verified live against the actual CLI, not
+just read) before merging the i18n/translation cleanup to `main`. Five
+confirmed bugs, all fixed and re-verified:
+
+1. **`assertCardInvariants` / `assertContinuityEnvelope` were dead code.**
+   `policy.ts`'s own header claimed "every other module must pass through
+   here before anything is persisted" — false: `vault.ts::saveCard` and
+   `saveHandoff` wrote any object handed to them with zero validation.
+   Fixed: `assertCardInvariants` now runs inside `createCard` AND again in
+   `vault.ts::saveCard` (so a card built any other way is checked too);
+   added `assertHandoffInvariants` and wired it into `saveHandoff`; wired
+   `assertContinuityEnvelope` into `quark dry-run` right after the envelope
+   is built.
+2. **The fossil/content guard only checked `--content`, never `--label`.**
+   `doppel card add fossil --label "<full narrative sentence>"` succeeded —
+   the exact memory/fossil blend invariant #3/#9 exist to prevent, just
+   smuggled through the one field the guard didn't cover. Fixed: moved the
+   check into `policy.ts::assertCardInvariants` (the real chokepoint, see
+   #1) and added a `label` length cap (60 chars) for `fossil_trace` — a
+   pattern name, not a sentence. `schemas/card.schema.json` now encodes the
+   same rule with an `if/then`.
+3. **`--scope deep` leaked sensitive cards that were never opted in.**
+   `isCardAllowedInScope`'s `deep` case allowed any `project_card`/
+   `boundary_card` unconditionally, with no `sensitivity` filter and no
+   `deep_allowed` check — contradicting the scope's own description
+   ("plus cards explicitly marked deep_allowed. Never the default").
+   Verified live: a `boundary_card` marked `sensitivity: sensitive` was
+   excluded from `--scope project` (correct) but appeared in full in
+   `--scope deep` despite never being marked `deep_allowed`. Fixed:
+   `deep` now requires either `deep_allowed === true`, or
+   (`project_card`/`boundary_card` AND not `sensitivity: sensitive`) —
+   matching the description it always claimed to follow.
+4. **A `--flag` value starting with `--` was silently dropped.**
+   `doppel card add memory --content "--my private note"` stored
+   `"content": "true"` on disk — no error, exit 0. The parser's heuristic
+   ("does the next token look like a flag?") guessed wrong and fell back to
+   treating the current flag as boolean. Fixed: `parseArgs` now has an
+   explicit allowlist of boolean-only flags (`deep-allowed`, `no-receipt`,
+   `confirm`); every other flag always consumes the next token as its
+   value, and throws `--<flag> expects a value` if none exists, instead of
+   silently substituting `"true"`.
+5. **Clipboard failure was silently swallowed.** `doppel handoff export`
+   (no `--out`) printed nothing when `copyToClipboard` failed — a user on a
+   headless box would assume the copy succeeded. Fixed: the failure
+   `reason` (e.g. "No clipboard tool found... use --out instead") is now
+   printed to stderr.
+
+Re-verified after fixing: the full README Quickstart still diffs clean
+against `examples/minimal/context_pack.md`; all five fixes were reproduced
+live (bug present) and re-tested live (bug gone, no regression on the
+legitimate use cases — e.g. short fossil labels, `--deep-allowed` opt-in,
+`--no-receipt`) before this entry was written.
+
+Lower-severity design debt found in the same pass and deliberately **not**
+blocking this merge — tracked instead: card/handoff/receipt IDs use 48 bits
+of randomness with no collision check before a file write (silent overwrite
+on collision); `vault.ts`'s `JSON.parse` calls have no try/catch around a
+possibly-corrupted file; `findCard`/`findHandoff` always scan every kind
+instead of using an already-known kind (O(N) instead of O(1) for
+`quark dry-run`); the vault root is implicit (`process.cwd()/.doppelganger`)
+with no override or cross-invocation check; ID generation, timestamp
+generation, and JSON read/write are each hand-repeated 4-6 times instead of
+through one shared helper; several exports (`SCOPE_DEFINITIONS`,
+`POLICY_INVARIANTS`, `touchCard`, `Vault.deleteCard`, `filterHandoffsForScope`,
+`exportJson`) have no caller anywhere in the codebase.
+
 ## 2026-06-18 — V1 MVP
 
 First real implementation, on top of a repo that previously had only a

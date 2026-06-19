@@ -36,16 +36,46 @@ export function assertNoAuthority(value: unknown, where: string): void {
 }
 
 export interface CardLike {
+  kind: string;
+  label: string;
+  content?: string;
   authority: boolean;
   revocable: boolean;
 }
 
+/** A fossil_trace is a structural signal, never readable narrative text. */
+const FOSSIL_LABEL_MAX_LENGTH = 60;
+
+/**
+ * The single chokepoint every Card must pass through before it is persisted,
+ * regardless of which module constructed it. cards.ts::createCard calls this
+ * on every card it builds, and vault.ts::saveCard calls it again at the
+ * write boundary — so a Card built any other way (import, migration, a
+ * future "card edit") is checked too, not just the one CLI-facing
+ * constructor.
+ */
 export function assertCardInvariants(card: CardLike, where = "card"): void {
   assertNoAuthority(card.authority, where);
   if (card.revocable !== true) {
     throw new PolicyViolationError(
       `${where}: revocable must be true. Every card must remain revocable by the user.`
     );
+  }
+  if (card.kind === "fossil_trace") {
+    if (card.content) {
+      throw new PolicyViolationError(
+        `${where}: fossil_trace cannot carry content. A fossil_trace is a structural signal ` +
+          `(a short label naming a recurring pattern), never readable narrative text — that is ` +
+          `what memory_card is for. Mixing the two turns the fossil store back into user memory. ` +
+          `See docs/doctrine.md.`
+      );
+    }
+    if (card.label.length > FOSSIL_LABEL_MAX_LENGTH) {
+      throw new PolicyViolationError(
+        `${where}: fossil_trace label must be a short pattern name, not narrative text ` +
+          `(max ${FOSSIL_LABEL_MAX_LENGTH} characters, got ${card.label.length}). See docs/doctrine.md.`
+      );
+    }
   }
 }
 
@@ -101,5 +131,20 @@ export function assertContinuityEnvelope(envelope: ContinuityEnvelope, where = "
   assertNoAuthority(envelope.activation_allowed, where);
   if (envelope.revocable !== true) {
     throw new PolicyViolationError(`${where}: revocable must be true on every deposit envelope.`);
+  }
+}
+
+export interface HandoffLike {
+  usable_as: string;
+  decisions: Array<{ authority: boolean }>;
+}
+
+/** Handoff cards never carry authority, and are never usable as anything but context. */
+export function assertHandoffInvariants(handoff: HandoffLike, where = "handoff"): void {
+  if (handoff.usable_as !== "context_only") {
+    throw new PolicyViolationError(`${where}: usable_as must be "context_only".`);
+  }
+  for (const decision of handoff.decisions) {
+    assertNoAuthority(decision.authority, `${where}.decisions[]`);
   }
 }

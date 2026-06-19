@@ -5,15 +5,19 @@
  *
  * memory_card != truth
  *
- * memory_card != fossil_trace — this is enforced here, not just documented.
- * A memory_card holds readable meaning ("the user prefers structured
- * replies"). A fossil_trace holds a structural signal about a recurring
- * pattern ("this theme recurs with stability across contexts") — never
- * free narrative text. createCard() refuses a `content` string on
- * fossil_trace for exactly this reason: blending the two is how a fossil
- * store quietly becomes "user memory" again, which the doctrine forbids.
+ * memory_card != fossil_trace — this is enforced in policy.ts, not just
+ * documented. A memory_card holds readable meaning ("the user prefers
+ * structured replies"). A fossil_trace holds a structural signal about a
+ * recurring pattern ("this theme recurs with stability across contexts") —
+ * never free narrative text. assertCardInvariants() rejects a `content`
+ * string (or an over-long, sentence-like `label`) on fossil_trace for
+ * exactly this reason: blending the two is how a fossil store quietly
+ * becomes "user memory" again, which the doctrine forbids. createCard()
+ * calls it below; vault.ts::saveCard() calls it again at the write
+ * boundary, so this is checked regardless of how a Card was built.
  */
 import { randomBytes } from "crypto";
+import { assertCardInvariants } from "./policy";
 
 export type CardKind = "memory_card" | "boundary_card" | "project_card" | "fossil_trace";
 
@@ -50,16 +54,8 @@ export function createCard(kind: CardKind, label: string, options: CreateCardOpt
   if (!label || !label.trim()) {
     throw new Error("cards: label is required");
   }
-  if (kind === "fossil_trace" && options.content) {
-    throw new Error(
-      "cards: fossil_trace cannot carry --content. A fossil_trace is a structural signal " +
-        "(a short label naming a recurring pattern), never readable narrative text — that is " +
-        "what memory_card is for. Mixing the two turns the fossil store back into user memory. " +
-        "See docs/doctrine.md."
-    );
-  }
   const now = new Date().toISOString();
-  return {
+  const card: Card = {
     id: `${KIND_PREFIX[kind]}_${randomBytes(6).toString("hex")}`,
     kind,
     label: label.trim(),
@@ -71,6 +67,8 @@ export function createCard(kind: CardKind, label: string, options: CreateCardOpt
     created_at: now,
     updated_at: now,
   };
+  assertCardInvariants(card, `card:${kind}`);
+  return card;
 }
 
 export function touchCard(card: Card): Card {

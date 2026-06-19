@@ -18,6 +18,7 @@ import { Card, CardKind } from "./cards";
 import { HandoffCard } from "./handoff";
 import { TrustReceipt } from "./receipts";
 import { IdentityAnchor, createIdentityAnchor } from "./identity";
+import { assertCardInvariants, assertHandoffInvariants } from "./policy";
 
 export interface Manifest {
   schema_version: "0.1";
@@ -121,6 +122,7 @@ export class Vault {
 
   saveCard(card: Card): void {
     this.assertInitialized();
+    assertCardInvariants(card, `card:${card.kind}`);
     const dir = path.join(this.cardsDir, card.kind);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, `${card.id}.json`), JSON.stringify(card, null, 2) + "\n", "utf8");
@@ -161,6 +163,7 @@ export class Vault {
 
   saveHandoff(handoff: HandoffCard): void {
     this.assertInitialized();
+    assertHandoffInvariants(handoff, "handoff");
     fs.mkdirSync(this.handoffsDir, { recursive: true });
     fs.writeFileSync(
       path.join(this.handoffsDir, `${handoff.id}.json`),

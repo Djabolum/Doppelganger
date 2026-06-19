@@ -56,7 +56,11 @@ export function isCardAllowedInScope(card: Card, scope: ScopeName): boolean {
       // Generic cards are not part of the handoff scope — handoff cards carry their own content.
       return false;
     case "deep":
-      return card.deep_allowed === true || card.kind === "project_card" || card.kind === "boundary_card";
+      return (
+        card.deep_allowed === true ||
+        ((card.kind === "project_card" || card.kind === "boundary_card") &&
+          card.sensitivity !== "sensitive")
+      );
     case "fossil_only":
       return card.kind === "fossil_trace";
     default:
