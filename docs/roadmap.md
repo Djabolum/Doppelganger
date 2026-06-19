@@ -3,47 +3,66 @@
 The roadmap follows one rule: widen circulation only after the previous
 boundary has been proven in real use.
 
-## V1.1 — Field hardening
+## V1 — Local Doppelganger
 
-Goal: prove the local product is understandable and dependable outside its
-own implementation session.
+Goal: create, bound, and export an intention under explicit user control.
 
-- use the CLI on 5–10 real continuity cases
+Delivered:
+
+- local cards and vault
+- scoped context packs
+- handoff cards
+- trust receipts and local revocation
+- no scraping, background synchronization, or default upload
+
+## V1.1 — Writing usability and Markdown compatibility
+
+Goal: make the local product comfortable to use without turning a writing
+surface into an authority source.
+
+Delivered field hardening:
+
 - `doppel doctor`
 - explicit Markdown and JSON exports
 - receiving profiles for ChatGPT, Claude, Gemini, and unknown targets
 - readable receipt detail
-- clearer errors and examples
+- clearer errors, examples, and field cases
 
-No network capability is added in V1.1.
+Next bounded addition:
 
-## V1.2 — Vault safety
+- import human-authored cards from simple Markdown files
+- accept exports from Notion-like writing tools without connecting to their
+  accounts
+- preview and validate every conversion before it enters the vault
+- reject unknown fields and unsupported object kinds
+- create canonical IDs, policy fields, and timestamps inside Doppelganger
 
-Goal: reduce local plaintext risk without claiming false security.
+The intended flow is:
 
-Minimum honest milestone:
+```text
+cards/*.md
+  -> doppel card import --dry-run
+  -> Doppelganger validation and policy
+  -> canonical local card
+```
 
-- `doppel vault status`
-- explicit plaintext warning
-- secret-detection guardrails
-- repository/gitignore checks
+The draft Markdown boundary is in `docs/markdown-card-import.md`.
 
-Optional stronger milestone, only with a reviewed cryptographic design:
+Notion content is not a valid continuity object by itself. V1.1 adds no
+Notion API, synchronization, account connection, or network capability.
 
-- `doppel vault encrypt`
-- `doppel vault unlock`
-- `doppel vault lock`
+Local vault safety remains a V1-series gate before broad non-technical
+adoption. Plaintext status and warnings come before any encryption claim;
+encryption ships only after a reviewed key-lifecycle and recovery design.
 
-Environment-key encryption (`DOPPELGANGER_VAULT_KEY`) is not automatically
-considered safe: key lifecycle, nonce handling, authenticated encryption,
-backup, recovery, and locked-memory behavior must be designed first.
+## V2 — Quark Gîte Intake
 
-## V2.0 — Quark Intake
+Goal: deposit a controlled trace into a host, receive bilateral evidence,
+revoke it through an explicit lifecycle, and observe it without transferring
+ownership or authority.
 
-Goal: make continuity cross a system boundary without becoming captured
-memory or authority.
-
-V2 is not `POST /fossils`. It requires a dedicated bilateral contract:
+V2 is not a generic upload and is not `POST /fossils`. It requires a
+dedicated bilateral contract:
 
 ```text
 Doppelganger vault
@@ -58,16 +77,37 @@ Doppelganger vault
 
 The draft contract is in `docs/quark-intake-contract-v0.1.md`.
 
-## V2.1 — Cross-AI handoff improvements
+## V2.1 — Circulation hardening
 
 - richer target capability profiles
 - explicit transformation history
 - bilateral receipt comparison
 - expiry and supersession semantics
+- remote revocation/deletion status that never overclaims recall
 - no assistant-to-assistant background communication
 
-## V3.0 — Browser extension
+## V3 — Interfaces
 
-The extension comes after the transport protocol is stable. It remains a
-manual user surface governed by `docs/browser-extension-policy.md`, never a
-background observer or account connector.
+Interfaces come only after the local object model and Quark transport
+contract are stable:
+
+- browser extension
+- official Notion adapter
+- MCP adapter
+
+Each interface remains subordinate to the same validation boundary. The
+browser extension is governed by `docs/browser-extension-policy.md`; the
+Notion adapter may read or write documents but cannot promote them directly
+into valid continuity objects; the MCP adapter exposes only explicit,
+scoped projections.
+
+```text
+Writing surface -> Doppelganger policy -> approved destination
+Notion          -> Doppelganger policy -> Quark host
+```
+
+The roles stay distinct:
+
+- Notion writes.
+- Doppelganger bounds.
+- Quark hosts.

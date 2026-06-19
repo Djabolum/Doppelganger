@@ -1,4 +1,4 @@
-# browser-extension — deferred to V1.1
+# browser-extension — deferred to V3
 
 Not part of the V1 MVP. Tracked here so the decision to defer is visible,
 not silent.
@@ -16,5 +16,5 @@ browser-extension/
 └── content-script.ts
 ```
 
-None of these files exist yet. `packages/core` and `packages/cli` must ship
-and be used first.
+None of these files exist yet. The local object model and Quark transport
+contract must be proven first.

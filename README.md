@@ -87,11 +87,17 @@ context/handoff export, and exposes explicit local revocation commands.
 
 V1.1 adds field diagnostics, explicit Markdown/JSON exports, readable
 receipt detail, and receiving profiles for ChatGPT, Claude, Gemini, and
-generic assistants. The roadmap is documented in `docs/roadmap.md`.
+generic assistants. A future local Markdown importer will accept
+Notion-like exports only through Doppelganger validation; its draft boundary
+is documented in `docs/markdown-card-import.md`.
 
 V2 remains intentionally blocked until Quark exposes a dedicated continuity
 intake. See `docs/quark-intake-contract-v0.1.md`; Doppelganger will not map
 continuity into an unrelated storage interface.
+
+The long-term layering is deliberate: writing surfaces write, Doppelganger
+bounds, and receiving hosts receive. Official Notion, browser, and MCP
+interfaces remain V3 work, after the transport contract is stable.
 
 Because this repository is public, documentation follows
 `docs/publication-policy.md`: public contracts and guarantees are documented;

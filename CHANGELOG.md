@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — Roadmap clarification
+
+- separated the product layers explicitly: writing surfaces write,
+  Doppelganger validates and bounds, receiving hosts receive
+- defined V1.1 Markdown compatibility as a local import boundary, not an
+  official Notion integration
+- moved the browser extension, official Notion adapter, and MCP adapter to
+  V3, after the local object model and Quark transport contract are stable
+- added a draft Markdown card format in which user-authored content is
+  validated before canonical IDs, policy fields, and timestamps are created
+
 ## 2026-06-19 — V1.1 Field hardening
 
 - added `doppel doctor`: vault presence/integrity, private permissions,
