@@ -4,13 +4,23 @@
   "title": "Context Pack",
   "description": "The readable output handed to an AI assistant. Context pack != identity.",
   "type": "object",
-  "required": ["schema_version", "kind", "scope", "target", "generated_at", "sections", "policy"],
+  "required": ["schema_version", "kind", "scope", "target", "target_profile", "generated_at", "sections", "policy"],
   "additionalProperties": false,
   "properties": {
-    "schema_version": { "const": "0.1" },
+    "schema_version": { "const": "0.2" },
     "kind": { "const": "context_pack" },
     "scope": { "enum": ["minimal", "project", "deep", "fossil_only"] },
     "target": { "type": "string", "minLength": 1 },
+    "target_profile": {
+      "type": "object",
+      "required": ["id", "display_name", "handling_note"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "enum": ["chatgpt", "claude", "gemini", "generic"] },
+        "display_name": { "type": "string", "minLength": 1 },
+        "handling_note": { "type": "string", "minLength": 1 }
+      }
+    },
     "generated_at": { "type": "string", "format": "date-time" },
     "sections": {
       "type": "object",

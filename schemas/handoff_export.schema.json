@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/handoff_export.schema.json",
+  "title": "Handoff Export",
+  "description": "A handoff plus bounded receiving metadata for a target assistant.",
+  "type": "object",
+  "required": ["schema_version", "kind", "target_profile", "handoff"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.1" },
+    "kind": { "const": "handoff_export" },
+    "target_profile": {
+      "type": "object",
+      "required": ["id", "display_name", "handling_note"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "enum": ["chatgpt", "claude", "gemini", "generic"] },
+        "display_name": { "type": "string", "minLength": 1 },
+        "handling_note": { "type": "string", "minLength": 1 }
+      }
+    },
+    "handoff": { "$ref": "handoff_card.schema.json" }
+  }
+}

@@ -7,14 +7,16 @@ import { Card } from "./cards";
 import { ScopeName } from "./scopes";
 import { filterCardsForScope, projectCardForScope } from "./scopes";
 import { assertExportPolicy, ExportPolicyLike } from "./policy";
+import { resolveTargetProfile, TargetProfile } from "./targets";
 
 export interface ContextPackPolicy extends ExportPolicyLike {}
 
 export interface ContextPack {
-  schema_version: "0.1";
+  schema_version: "0.2";
   kind: "context_pack";
   scope: ScopeName;
   target: string;
+  target_profile: TargetProfile;
   generated_at: string;
   sections: {
     preferences: Card[];
@@ -55,10 +57,11 @@ export function buildContextPack(options: BuildContextPackOptions): ContextPack 
   assertExportPolicy(policy, "context_pack");
 
   return {
-    schema_version: "0.1",
+    schema_version: "0.2",
     kind: "context_pack",
     scope: options.scope,
     target: options.target,
+    target_profile: resolveTargetProfile(options.target),
     generated_at: new Date().toISOString(),
     sections: { preferences, project_context, boundaries, fossil_traces },
     policy,
@@ -74,6 +77,8 @@ export function renderContextPackMarkdown(pack: ContextPack): string {
   lines.push("");
   lines.push(`Scope: ${pack.scope}`);
   lines.push(`Target: ${pack.target}`);
+  lines.push(`Target profile: ${pack.target_profile.display_name}`);
+  lines.push(`Receiving note: ${pack.target_profile.handling_note}`);
   lines.push("");
 
   lines.push("## Preferences");

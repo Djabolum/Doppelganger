@@ -7,6 +7,7 @@
  * Handoff card != command
  */
 import { randomBytes } from "crypto";
+import { resolveTargetProfile, TargetProfile } from "./targets";
 
 export type HandoffStatus = "architecture_exploration" | "open" | "closed";
 
@@ -29,6 +30,13 @@ export interface HandoffCard {
   boundaries: string[];
   usable_as: "context_only";
   created_at: string;
+}
+
+export interface HandoffExport {
+  schema_version: "0.1";
+  kind: "handoff_export";
+  target_profile: TargetProfile;
+  handoff: HandoffCard;
 }
 
 export interface CreateHandoffOptions {
@@ -76,6 +84,7 @@ export function createHandoffCard(
  * into another assistant. Deliberately plain — no styling assumptions.
  */
 export function renderHandoffMarkdown(card: HandoffCard): string {
+  const profile = resolveTargetProfile(card.target_surface);
   const lines: string[] = [];
   lines.push(`# Handoff — ${card.topic}`);
   lines.push("");
@@ -84,6 +93,8 @@ export function renderHandoffMarkdown(card: HandoffCard): string {
   lines.push(`From: ${card.from_surface}`);
   lines.push(`Target: ${card.target_surface}`);
   lines.push(`Status: ${card.status}`);
+  lines.push(`Target profile: ${profile.display_name}`);
+  lines.push(`Receiving note: ${profile.handling_note}`);
   lines.push("");
 
   lines.push("## Decisions");
@@ -118,4 +129,13 @@ export function renderHandoffMarkdown(card: HandoffCard): string {
   lines.push("");
 
   return lines.join("\n");
+}
+
+export function buildHandoffExport(card: HandoffCard): HandoffExport {
+  return {
+    schema_version: "0.1",
+    kind: "handoff_export",
+    target_profile: resolveTargetProfile(card.target_surface),
+    handoff: card,
+  };
 }

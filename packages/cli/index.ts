@@ -8,26 +8,33 @@
  *   doppel card add <kind> --label <label> [--content <text>] [--sensitivity ...] [--deep-allowed]
  *   doppel card list [<kind>]
  *   doppel card revoke --id <id> [--reason <text>]
- *   doppel context build --scope <scope> --target <target> [--out <file>]
+ *   doppel context build --scope <scope> --target <target> [--format markdown|json] [--out <file>]
  *   doppel handoff create --topic <topic> --from <surface> [--to <surface>]
  *                          [--decision <text>]* [--open-question <text>]* [--boundary <text>]*
  *   doppel handoff list
- *   doppel handoff export --id <id> [--out <file>]
+ *   doppel handoff export --id <id> [--format markdown|json] [--out <file>]
  *   doppel handoff revoke --id <id> [--reason <text>]
  *   doppel receipt list
+ *   doppel receipt show --id <id>
  *   doppel quark dry-run --type <kind> --id <id>
  *   doppel quark deposit ...   -> explicitly not implemented in V1 (see docs/quark-integration.md)
  *   doppel status
  *   doppel inspect
+ *   doppel doctor
  */
 import { Vault } from "../core/vault";
 import { createCard, resolveCardKind, Card, CardKind } from "../core/cards";
 import { ScopeName, SCOPES } from "../core/scopes";
 import { buildContextPack, renderContextPackMarkdown } from "../core/context_pack";
-import { createHandoffCard, renderHandoffMarkdown } from "../core/handoff";
-import { createReceipt, formatReceiptLine } from "../core/receipts";
+import {
+  buildHandoffExport,
+  createHandoffCard,
+  renderHandoffMarkdown,
+} from "../core/handoff";
+import { createReceipt, formatReceiptDetails, formatReceiptLine } from "../core/receipts";
 import { buildContinuityEnvelope, assertContinuityEnvelope } from "../core/policy";
 import { exportMarkdown, exportJson, copyToClipboard } from "../adapters/file-export";
+import { renderDoctorReport, runDoctor } from "../core/doctor";
 
 interface ParsedArgs {
   positional: string[];
@@ -88,6 +95,16 @@ function assertAllowedFlags(args: ParsedArgs, allowed: readonly string[], where:
   }
 }
 
+type ExportFormat = "markdown" | "json";
+
+function exportFormat(args: ParsedArgs, where: string): ExportFormat {
+  const format = flag(args, "format") ?? "markdown";
+  if (format !== "markdown" && format !== "json") {
+    throw new Error(`${where}: --format must be markdown or json`);
+  }
+  return format;
+}
+
 function fail(message: string): never {
   process.stderr.write(`doppel: ${message}\n`);
   process.exit(1);
@@ -103,16 +120,18 @@ function printUsage(): void {
       "  doppel card add <memory|boundary|project|fossil> --label <label> [--content <text>] [--sensitivity public|normal|sensitive] [--deep-allowed]",
       "  doppel card list [<kind>]",
       "  doppel card revoke --id <id> [--reason <text>]",
-      "  doppel context build --scope <minimal|project|deep|fossil_only> --target <ai_name> [--out <file>]",
+      "  doppel context build --scope <minimal|project|deep|fossil_only> --target <ai_name> [--format markdown|json] [--out <file>]",
       "  doppel handoff create --topic <topic> --from <surface> [--to <surface>] [--decision <text> ...] [--open-question <text> ...] [--boundary <text> ...]",
       "  doppel handoff list",
-      "  doppel handoff export --id <id> [--out <file>]",
+      "  doppel handoff export --id <id> [--format markdown|json] [--out <file>]",
       "  doppel handoff revoke --id <id> [--reason <text>]",
       "  doppel receipt list",
+      "  doppel receipt show --id <id>",
       "  doppel quark dry-run --type <memory|boundary|project|fossil|handoff> --id <id>",
       "  doppel quark deposit ...   (not implemented in V1 — see docs/quark-integration.md)",
       "  doppel status",
       "  doppel inspect",
+      "  doppel doctor",
       "",
     ].join("\n")
   );
@@ -180,7 +199,7 @@ function cmdCardRevoke(args: ParsedArgs): void {
 }
 
 function cmdContextBuild(args: ParsedArgs): void {
-  assertAllowedFlags(args, ["scope", "target", "out"], "context build");
+  assertAllowedFlags(args, ["scope", "target", "format", "out"], "context build");
   const scope = flag(args, "scope") as ScopeName | undefined;
   const target = flag(args, "target");
   if (!scope || !SCOPES.includes(scope)) {
@@ -197,13 +216,18 @@ function cmdContextBuild(args: ParsedArgs): void {
   const vault = new Vault();
   const cards = vault.listCards();
   const pack = buildContextPack({ cards, scope: scope!, target: target! });
-  const markdown = renderContextPackMarkdown(pack);
+  const format = exportFormat(args, "context build");
+  const output =
+    format === "markdown"
+      ? renderContextPackMarkdown(pack)
+      : JSON.stringify(pack, null, 2) + "\n";
 
-  process.stdout.write(markdown);
+  process.stdout.write(output);
 
   const out = flag(args, "out");
   if (out) {
-    const resolved = exportMarkdown(markdown, out);
+    const resolved =
+      format === "markdown" ? exportMarkdown(output, out) : exportJson(pack, out);
     process.stderr.write(`\nWritten to ${resolved}\n`);
   }
 
@@ -259,22 +283,30 @@ function cmdHandoffList(args: ParsedArgs): void {
 }
 
 function cmdHandoffExport(args: ParsedArgs): void {
-  assertAllowedFlags(args, ["id", "out"], "handoff export");
+  assertAllowedFlags(args, ["id", "format", "out"], "handoff export");
   const id = flag(args, "id");
   if (!id) fail("handoff export: --id is required");
   const vault = new Vault();
   const handoff = vault.findHandoff(id!);
   if (!handoff) fail(`handoff export: no handoff found with id "${id}"`);
 
-  const markdown = renderHandoffMarkdown(handoff!);
-  process.stdout.write(markdown);
+  const format = exportFormat(args, "handoff export");
+  const handoffExport = buildHandoffExport(handoff!);
+  const output =
+    format === "markdown"
+      ? renderHandoffMarkdown(handoff!)
+      : JSON.stringify(handoffExport, null, 2) + "\n";
+  process.stdout.write(output);
 
   const out = flag(args, "out");
   if (out) {
-    const resolved = exportMarkdown(markdown, out);
+    const resolved =
+      format === "markdown"
+        ? exportMarkdown(output, out)
+        : exportJson(handoffExport, out);
     process.stderr.write(`\nWritten to ${resolved}\n`);
   } else {
-    const clipboard = copyToClipboard(markdown);
+    const clipboard = copyToClipboard(output);
     if (clipboard.copied) {
       process.stderr.write(`\nCopied to clipboard via ${clipboard.tool}.\n`);
     } else {
@@ -313,6 +345,16 @@ function cmdReceiptList(args: ParsedArgs): void {
   for (const r of receipts) {
     process.stdout.write(formatReceiptLine(r) + "\n");
   }
+}
+
+function cmdReceiptShow(args: ParsedArgs): void {
+  assertAllowedFlags(args, ["id"], "receipt show");
+  const id = flag(args, "id");
+  if (!id) fail("receipt show: --id is required");
+  const vault = new Vault();
+  const receipt = vault.findReceipt(id);
+  if (!receipt) fail(`receipt show: no receipt found with id "${id}"`);
+  process.stdout.write(formatReceiptDetails(receipt));
 }
 
 function cmdQuarkDryRun(args: ParsedArgs): void {
@@ -364,8 +406,8 @@ function cmdQuarkDeposit(): void {
   process.stderr.write(
     [
       "doppel: quark deposit is not implemented in V1.",
-      "Quark-AI does not yet expose the intake endpoints this would need",
-      "(POST /api/quark/intake/{memory-card,boundary-card,handoff-card,fossil-trace,trust-receipt}).",
+      "Quark-AI does not yet expose the dedicated continuity intake this requires",
+      "(POST /api/quark/intake/continuity). Existing storage interfaces are not compatible.",
       "See docs/quark-integration.md and packages/adapters/quark/README.md.",
       "Use \"doppel quark dry-run\" to preview the envelope locally.",
       "",
@@ -409,6 +451,18 @@ function cmdInspect(): void {
   process.stdout.write(`Revocations: ${revocations.length}\n`);
 }
 
+function cmdDoctor(): void {
+  const report = runDoctor(new Vault());
+  process.stdout.write(renderDoctorReport(report));
+  if (!report.healthy) process.exitCode = 1;
+}
+
+function assertNoTrailingArgs(command: string, sub: string | undefined, rest: string[]): void {
+  if (sub !== undefined || rest.length > 0) {
+    fail(`${command}: unexpected argument "${sub ?? rest[0]}"`);
+  }
+}
+
 function main(): void {
   const [command, sub, ...rest] = process.argv.slice(2);
 
@@ -419,6 +473,7 @@ function main(): void {
 
   switch (command) {
     case "init":
+      assertNoTrailingArgs("init", sub, rest);
       return cmdInit();
 
     case "card": {
@@ -447,6 +502,7 @@ function main(): void {
     case "receipt": {
       const args = parseArgs(rest);
       if (sub === "list") return cmdReceiptList(args);
+      if (sub === "show") return cmdReceiptShow(args);
       return fail(`unknown subcommand "receipt ${sub}"`);
     }
 
@@ -458,10 +514,16 @@ function main(): void {
     }
 
     case "status":
+      assertNoTrailingArgs("status", sub, rest);
       return cmdStatus();
 
     case "inspect":
+      assertNoTrailingArgs("inspect", sub, rest);
       return cmdInspect();
+
+    case "doctor":
+      assertNoTrailingArgs("doctor", sub, rest);
+      return cmdDoctor();
 
     default:
       printUsage();

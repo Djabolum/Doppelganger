@@ -57,8 +57,10 @@ node dist/packages/cli/index.js card add boundary \
   --content "turn my traces or emotions into a diagnosis"
 
 node dist/packages/cli/index.js context build --scope minimal --target claude
+node dist/packages/cli/index.js context build --scope minimal --target chatgpt --format json
 
 node dist/packages/cli/index.js status
+node dist/packages/cli/index.js doctor
 
 # Remove a local card while keeping a revocation audit record
 node dist/packages/cli/index.js card revoke --id <card_id>
@@ -68,7 +70,8 @@ Once installed globally (or linked), the same commands run as `doppel init`,
 `doppel card add ...`, `doppel context build ...`.
 
 See `examples/minimal/` for the manifest, cards, and context pack this
-produces, and `docs/scopes.md` for what each scope includes.
+produces, `docs/field-cases.md` for eight realistic usage paths, and
+`docs/scopes.md` for what each scope includes.
 
 ## Status
 
@@ -81,6 +84,18 @@ observatory. See `CHANGELOG.md` for the full breakdown.
 The vault validates every object again when it is read, uses private
 filesystem permissions (`0700` directories, `0600` files), records every
 context/handoff export, and exposes explicit local revocation commands.
+
+V1.1 adds field diagnostics, explicit Markdown/JSON exports, readable
+receipt detail, and receiving profiles for ChatGPT, Claude, Gemini, and
+generic assistants. The roadmap is documented in `docs/roadmap.md`.
+
+V2 remains intentionally blocked until Quark exposes a dedicated continuity
+intake. See `docs/quark-intake-contract-v0.1.md`; Doppelganger will not map
+continuity into an unrelated storage interface.
+
+Because this repository is public, documentation follows
+`docs/publication-policy.md`: public contracts and guarantees are documented;
+private deployment topology is not.
 
 ## Contributing
 

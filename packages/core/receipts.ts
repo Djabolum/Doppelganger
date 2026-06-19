@@ -48,3 +48,20 @@ export function formatReceiptLine(receipt: TrustReceipt): string {
     `raw_text_included=${receipt.raw_text_included}`
   );
 }
+
+export function formatReceiptDetails(receipt: TrustReceipt): string {
+  return [
+    `Receipt: ${receipt.id}`,
+    `Created: ${receipt.created_at}`,
+    `Target: ${receipt.target}`,
+    `Scope: ${receipt.scope}`,
+    `Cards exported: ${receipt.cards_exported.length ? receipt.cards_exported.join(", ") : "none"}`,
+    `Handoffs exported: ${
+      receipt.handoffs_exported.length ? receipt.handoffs_exported.join(", ") : "none"
+    }`,
+    `Raw text included: ${receipt.raw_text_included}`,
+    "",
+    "This receipt records one past export. It grants no future consent.",
+    "",
+  ].join("\n");
+}

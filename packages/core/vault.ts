@@ -322,6 +322,10 @@ export class Vault {
       });
   }
 
+  findReceipt(id: string): TrustReceipt | undefined {
+    return this.listReceipts().find((receipt) => receipt.id === id);
+  }
+
   private createRevocation(
     kind: RevocationRecord["kind"],
     artifactId: string,

@@ -78,6 +78,7 @@ would report any other vulnerability.
   not encrypted yet. Treat it like any other local file containing
   personal notes: protect it with normal filesystem and disk permissions.
   Doppelganger creates directories as `0700` and files as `0600`.
+  Explicit Markdown/JSON exports are also created as `0600` by default.
   Encryption at rest is a planned follow-up, not a V1 MVP claim.
 - Nothing in this repository assumes a multi-user environment. The vault
   is single-user, single-machine, by design.

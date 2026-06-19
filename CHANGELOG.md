@@ -1,8 +1,28 @@
 # Changelog
 
+## 2026-06-19 — V1.1 Field hardening
+
+- added `doppel doctor`: vault presence/integrity, private permissions,
+  artifact counts, receipt ledger, network-disabled state, Quark adapter
+  state, and an executable policy chokepoint self-test
+- added explicit `--format markdown|json` to context and handoff exports
+- added bounded receiving profiles for ChatGPT, Claude, Gemini, and generic
+  assistants; profiles alter presentation only, never scope or policy
+- bumped `context_pack` to schema `0.2` because `target_profile` is now
+  carried in both Markdown and JSON exports
+- added `doppel receipt show --id ...` for human-readable export history
+- private `0600` permissions now also apply to explicit file exports
+- documented eight field cases, the V1.1→V3 roadmap, and the strict draft
+  Quark Intake Contract for V2
+- confirmed that the currently available Quark interfaces do not implement
+  the required continuity contract; no network adapter was fabricated
+- added a public-documentation policy and automated exposure scan; private
+  deployment paths, domains, topology names, ports, and operator details are
+  rejected from public docs and examples
+
 ## 2026-06-19 — Integrity, scope, consent, and test hardening
 
-Closed the nine findings from the full VPS-context-aware repository audit:
+Closed the nine findings from the full architecture-aware repository audit:
 
 1. Vault files are now treated as untrusted input. Runtime validators mirror
    the JSON schemas, reject unknown fields, name malformed files, and rerun

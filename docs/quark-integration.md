@@ -4,6 +4,10 @@ Quark-AI is optional. Doppelganger works fully offline without it — see
 `docs/threat-model.md`. This document describes what *would* connect them,
 what already exists today, and what is deliberately not built yet.
 
+The minimal V2 contract is drafted in
+`docs/quark-intake-contract-v0.1.md`. It requires a dedicated continuity
+quarantine and bilateral receipts; it is not a wrapper around `/fossils`.
+
 ## What exists today (V1 MVP)
 
 `doppel quark dry-run --type <kind> --id <id>` (see
@@ -32,44 +36,32 @@ pointing here and to `packages/adapters/quark/README.md`.
 ## Why a real deposit is deferred, not stubbed silently
 
 A real deposit needs intake endpoints that do not exist yet on the Quark-AI
-backend. Today, Quark's Nautilus API exposes
-fossil-shaped endpoints (`/api/nautilus/fossils/fossilize`,
-`/api/nautilus/fossils`, `/api/nautilus/fossils/{id}`,
-`/api/nautilus/versions`) built around `fossil_type`, `source_prompt`,
-`reasoning_traces`, `response_patterns`, `style_signature`, and related
-fields. Posting a `memory_card` or a `handoff_card` straight into that shape
+backend. Reusing an existing generic or fossil-oriented storage interface
 would blur four objects that `docs/doctrine.md` explicitly keeps apart:
 fossil, memory card, handoff card, and receipt.
 
-The intended shape, when this is built for real, is more explicit:
+The intended V2 shape is one explicit continuity intake:
 
 ```
-POST /api/quark/intake/memory-card
-POST /api/quark/intake/boundary-card
-POST /api/quark/intake/handoff-card
-POST /api/quark/intake/fossil-trace
-POST /api/quark/intake/trust-receipt
+POST /api/quark/intake/continuity
 ```
 
-None of these exist on the Quark-AI side yet. Building them is a Quark-side
-effort, not a Doppelganger one — `packages/adapters/quark/` stays a
-placeholder until that work happens.
+It receives a `continuity_deposit`, validates the non-authority policy, and
+stores it in a continuity quarantine. It returns a server receipt that
+Doppelganger pairs with its local receipt.
 
-## Planned mapping (for when the intake endpoints exist)
+This endpoint does not exist on the Quark-AI side yet. Building it is a
+bilateral Quark/Doppelganger effort — `packages/adapters/quark/` stays a
+placeholder until that contract is implemented and tested on both sides.
 
-If the existing Nautilus fossil store is reused instead of new intake
-routes, the mapping would be:
+## No storage compatibility shortcut
 
-```
-handoff_card  -> fossil_type = continuity_handoff
-memory_card   -> fossil_type = memory_card
-boundary_card -> fossil_type = boundary_card
-fossil_trace  -> fossil_type = external_fossil_trace
-trust_receipt -> fossil_type = trust_receipt
-```
+Continuity objects must not be translated into another storage vocabulary
+merely to reuse an available endpoint. That would make the distinction
+`continuity_deposit != fossil` cosmetic instead of structural.
 
-But every payload must carry a strict envelope, never folded into Quark's
-own `decision_tree`:
+Every deposit must carry a strict envelope, never folded into Quark's own
+`decision_tree`:
 
 ```json
 {
@@ -86,18 +78,16 @@ own `decision_tree`:
 ```
 
 This mirrors the envelope already produced locally by
-`packages/core/policy.ts::buildContinuityEnvelope` — the same shape QPL
-traces already use elsewhere on this VPS (`output != fossil`,
-`memory != structure`, `observation != intervention`,
-`contains_raw_user_text: false`, `decision_authority: false`,
-`memory_authority: false`). The doctrine is not new; only the exposure is.
+`packages/core/policy.ts::buildContinuityEnvelope` and preserves the public
+doctrine: `output != fossil`, `memory != structure`,
+`observation != intervention`.
 
 ## What V1 deliberately does not include
 
 - No HTTP client to Quark anywhere in `packages/adapters/quark/`.
 - No `--confirm` path on `doppel quark deposit`.
-- No separate `fossil_trace.schema.json` or `quark_deposit.schema.json`
+- No separate `fossil_trace.schema.json` or `continuity_deposit.schema.json`
   exists yet. Fossils are currently constrained by `card.schema.json`;
-  the deposit shape stays local and provisional until Quark-side intake
-  endpoints exist. `handoff_card.schema.json` now ships because handoffs are
+  the network deposit schema remains a reviewed draft until Quark-side
+  intake exists. `handoff_card.schema.json` now ships because handoffs are
   already a stable local/exported object.

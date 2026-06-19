@@ -11,14 +11,19 @@ import { spawnSync } from "child_process";
 export function exportMarkdown(content: string, filePath: string): string {
   const resolved = path.resolve(filePath);
   fs.mkdirSync(path.dirname(resolved), { recursive: true });
-  fs.writeFileSync(resolved, content, "utf8");
+  fs.writeFileSync(resolved, content, { encoding: "utf8", mode: 0o600 });
+  fs.chmodSync(resolved, 0o600);
   return resolved;
 }
 
 export function exportJson(value: unknown, filePath: string): string {
   const resolved = path.resolve(filePath);
   fs.mkdirSync(path.dirname(resolved), { recursive: true });
-  fs.writeFileSync(resolved, JSON.stringify(value, null, 2) + "\n", "utf8");
+  fs.writeFileSync(resolved, JSON.stringify(value, null, 2) + "\n", {
+    encoding: "utf8",
+    mode: 0o600,
+  });
+  fs.chmodSync(resolved, 0o600);
   return resolved;
 }
 

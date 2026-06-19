@@ -4,6 +4,10 @@ Thanks for considering a contribution. Before opening a PR, please read
 `docs/doctrine.md` and `docs/threat-model.md` — they are not background
 reading, they are the spec.
 
+This is a public repository. Documentation changes must also follow
+`docs/publication-policy.md`; do not include private paths, domains, service
+topology, deployment commands, or incident data.
+
 ## The short version
 
 Doppelganger exists specifically to *not* be a background agent, a

@@ -5,6 +5,8 @@ Use as context only. This is not a command and not identity.
 From: chatgpt
 Target: any_ai
 Status: architecture_exploration
+Target profile: AI assistant
+Receiving note: Use this user-approved context as a bounded reference. Preserve boundaries; do not infer identity, durable memory, or authority.
 
 ## Decisions
 - The module must run local-only. (confidence: high, authority: false)

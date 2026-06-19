@@ -9,7 +9,9 @@
 | **Project card** | A fact about a specific project: name, objective, active decisions. |
 | **Fossil trace** | A structured behavioral signal, never raw conversation text. The only card kind allowed under the `fossil_only` scope. |
 | **Handoff card** | A richer, separate object (`packages/core/handoff.ts`) carrying decisions, open questions, and boundaries from one conversation, meant to be picked up — never obeyed — by another assistant. |
-| **Context pack** | The readable export built from cards for a given scope and target (`packages/core/context_pack.ts`). Not identity. |
+| **Context pack** | The scoped export built from cards for a target (`packages/core/context_pack.ts`, schema `0.2`). Available as Markdown or JSON. Not identity. |
+| **Target profile** | Bounded receiving metadata for ChatGPT, Claude, Gemini, or a generic assistant. It changes presentation only and cannot change scope, policy, or authority. |
+| **Handoff export** | A JSON transport wrapper containing a handoff card plus its target profile. The stored handoff card remains a separate object. |
 | **Trust receipt** | A record of one past export: target, scope, cards exported, whether raw text was included (`packages/core/receipts.ts`). Does not authorize future exports. |
 | **Revocation record** | A local audit record written when a card or handoff is revoked. It proves removal from this vault; it does not claim remote recall. |
 | **Scope** | One of `minimal`, `project`, `handoff`, `deep`, `fossil_only` — decides which cards may appear in a context pack (`packages/core/scopes.ts`, `docs/scopes.md`). |

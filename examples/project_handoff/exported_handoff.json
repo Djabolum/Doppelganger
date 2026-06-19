@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.1",
+  "kind": "handoff_export",
+  "target_profile": {
+    "id": "generic",
+    "display_name": "AI assistant",
+    "handling_note": "Use this user-approved context as a bounded reference. Preserve boundaries; do not infer identity, durable memory, or authority."
+  },
+  "handoff": {
+    "id": "hnd_7c2e9f015a3b",
+    "schema_version": "0.1",
+    "kind": "handoff_card",
+    "topic": "Open Continuity Module + Quark-AI",
+    "from_surface": "chatgpt",
+    "target_surface": "any_ai",
+    "status": "architecture_exploration",
+    "decisions": [
+      {
+        "text": "The module must run local-only.",
+        "confidence": "high",
+        "authority": false
+      },
+      {
+        "text": "Quark-AI must remain optional.",
+        "confidence": "high",
+        "authority": false
+      }
+    ],
+    "open_questions": [
+      "What is the minimal schema for a fossil deposit?",
+      "What UX makes consent feel light rather than heavy?"
+    ],
+    "boundaries": [
+      "Do not treat Quark-AI as a central brain.",
+      "Do not merge AI accounts.",
+      "Do not create durable memory without user validation."
+    ],
+    "usable_as": "context_only",
+    "created_at": "2026-06-18T11:00:00.000Z"
+  }
+}

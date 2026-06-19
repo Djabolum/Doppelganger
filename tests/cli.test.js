@@ -231,3 +231,115 @@ test("README quickstart output stays aligned with the checked-in fixture", (t) =
   );
   assert.equal(result.stdout, fixture);
 });
+
+test("doctor reports a healthy local-only vault without making network claims", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  run(cwd, ["card", "add", "boundary", "--label", "No diagnosis"]);
+  const result = run(cwd, ["doctor"]);
+  assert.match(result.stdout, /\[OK\] Vault found: yes/);
+  assert.match(result.stdout, /\[OK\] Boundary cards: 1/);
+  assert.match(result.stdout, /\[OK\] Network: disabled/);
+  assert.match(result.stdout, /\[OK\] Quark adapter: dry-run only/);
+  assert.match(result.stdout, /\[OK\] Policy chokepoint: active/);
+  assert.match(result.stdout, /Overall: healthy/);
+});
+
+test("doctor points an uninitialized user to doppel init", (t) => {
+  const cwd = workspace(t);
+  const result = run(cwd, ["doctor"], 1);
+  assert.match(result.stdout, /Vault found: no/);
+  assert.match(result.stdout, /doppel init/);
+});
+
+test("context build supports machine-readable JSON and writes private files", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  run(cwd, ["card", "add", "project", "--label", "V1.1", "--content", "Field hardening"]);
+  const out = path.join(cwd, "context.json");
+  const result = run(cwd, [
+    "context",
+    "build",
+    "--scope",
+    "project",
+    "--target",
+    "chatgpt",
+    "--format",
+    "json",
+    "--out",
+    out,
+  ]);
+  const pack = JSON.parse(result.stdout);
+  assert.equal(pack.target, "chatgpt");
+  assert.equal(pack.target_profile.id, "chatgpt");
+  assert.equal(pack.sections.project_context[0].label, "V1.1");
+  assert.deepEqual(JSON.parse(fs.readFileSync(out, "utf8")), pack);
+  if (process.platform !== "win32") {
+    assert.equal(fs.statSync(out).mode & 0o777, 0o600);
+  }
+});
+
+test("handoff JSON export and receipt detail remain readable", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const created = run(cwd, [
+    "handoff",
+    "create",
+    "--topic",
+    "Quark Intake",
+    "--from",
+    "chatgpt",
+    "--to",
+    "claude",
+    "--decision",
+    "Use quarantine",
+  ]);
+  const id = JSON.parse(created.stdout).id;
+  const exported = run(cwd, ["handoff", "export", "--id", id, "--format", "json"]);
+  const handoffExport = JSON.parse(exported.stdout);
+  assert.equal(handoffExport.handoff.id, id);
+  assert.equal(handoffExport.target_profile.id, "claude");
+
+  const receipts = fs
+    .readFileSync(path.join(cwd, ".doppelganger/receipts.jsonl"), "utf8")
+    .trim()
+    .split("\n")
+    .map(JSON.parse);
+  const shown = run(cwd, ["receipt", "show", "--id", receipts[0].id]);
+  assert.match(shown.stdout, new RegExp(`Handoffs exported: ${id}`));
+  assert.match(shown.stdout, /grants no future consent/);
+});
+
+test("target profiles are bounded presentation templates", () => {
+  const { resolveTargetProfile } = require("../dist/packages/core/targets.js");
+  assert.equal(resolveTargetProfile("chatgpt").id, "chatgpt");
+  assert.equal(resolveTargetProfile("anthropic").id, "claude");
+  assert.equal(resolveTargetProfile("google").id, "gemini");
+  assert.equal(resolveTargetProfile("unknown-host").id, "generic");
+  for (const target of ["chatgpt", "claude", "gemini", "unknown-host"]) {
+    const profile = resolveTargetProfile(target);
+    assert.doesNotMatch(profile.handling_note, /authority:\s*true/i);
+    assert.match(profile.handling_note, /context|reference/i);
+  }
+});
+
+test("invalid formats and trailing command arguments fail clearly", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const invalidFormat = run(
+    cwd,
+    ["context", "build", "--scope", "minimal", "--target", "claude", "--format", "xml"],
+    1
+  );
+  assert.match(invalidFormat.stderr, /--format must be markdown or json/);
+  const trailing = run(cwd, ["doctor", "--mystery"], 1);
+  assert.match(trailing.stderr, /unexpected argument/);
+});
+
+test("real Quark deposit remains blocked until the continuity intake exists", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const result = run(cwd, ["quark", "deposit", "--confirm"], 1);
+  assert.match(result.stderr, /POST \/api\/quark\/intake\/continuity/);
+  assert.match(result.stderr, /Existing storage interfaces are not compatible/);
+});

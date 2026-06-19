@@ -41,6 +41,7 @@ This document exists so the boundary is explicit, not assumed.
 | Leak the vault path or contents over MCP | `packages/adapters/mcp/` is an empty placeholder. No MCP server exists yet to leak through. |
 | Skip the audit trail with an export flag | Context and handoff exports always append a trust receipt. The former `--no-receipt` escape hatch no longer exists. |
 | Treat `revocable: true` as remote recall | Revocation is explicitly local: it removes the vault artifact and records the act, but never claims to erase copies already exported elsewhere. |
+| Let a target template silently widen the export | Target profiles are generated after scope filtering and carry receiving guidance only. They cannot add cards, remove boundaries, or alter policy flags. Markdown and JSON expose the same profile metadata. |
 
 ## What is genuinely deferred (not silently dropped)
 

@@ -64,3 +64,13 @@ No readable sensitive content at all.
 | "This is going to Quark, not to a conversation" | `fossil_only` |
 
 There is no scope called "everything", on purpose.
+
+## Target profiles
+
+`--target chatgpt`, `--target claude`, and `--target gemini` add a short
+receiving note appropriate to that assistant. Unknown targets use the
+generic profile.
+
+Profiles are present in Markdown and JSON exports. They may change
+presentation only: card selection, boundaries, policy flags, and authority
+remain entirely controlled by the scope and core policy.
