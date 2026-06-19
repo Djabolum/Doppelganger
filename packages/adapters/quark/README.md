@@ -14,6 +14,7 @@ not exist yet on the Quark-AI backend — only
 `/api/nautilus/fossils/fossilize` and friends exist today, and mapping
 straight into those would blur fossil/memory-card/handoff-card/receipt into
 one bucket, which the doctrine (`docs/quark-integration.md`) explicitly
-forbids. Building this adapter for real is a separate, Quark-side chantier.
+forbids. Building this adapter for real is a separate effort on the
+Quark-AI side.
 
 See `docs/quark-integration.md` for the full mapping plan.

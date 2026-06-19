@@ -18,7 +18,9 @@ It prepares contexts, boundaries, and exchanges that you choose to share with an
 - Build scoped context packs
 - Prepare handoff cards between AI assistants
 - Write trust receipts
-- Optionally deposit selected traces into Quark-AI
+- Preview (dry-run only, no network call) what an optional deposit into
+  Quark-AI would contain — a real deposit is not implemented yet, see
+  Status below
 
 ## What it does not do
 
@@ -47,12 +49,12 @@ npm run build
 node dist/packages/cli/index.js init
 
 node dist/packages/cli/index.js card add memory \
-  --label "Style de réponse" \
-  --content "Répondre en couches, éviter les réponses génériques."
+  --label "Response style" \
+  --content "Answer in layers, avoid generic replies."
 
 node dist/packages/cli/index.js card add boundary \
-  --label "Non-diagnostic" \
-  --content "transformer mes traces ou émotions en diagnostic"
+  --label "No diagnosis" \
+  --content "turn my traces or emotions into a diagnosis"
 
 node dist/packages/cli/index.js context build --scope minimal --target claude
 

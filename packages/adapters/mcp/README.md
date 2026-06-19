@@ -6,9 +6,8 @@ the user pasting it manually.
 
 **Deliberately not built yet.** Exposing the vault before scopes and
 per-target permissions are battle-tested through the CLI risks the failure
-mode named directly in the source design: "n'importe quelle IA peut lire le
-coffre" (any AI can read the vault). MCP support must arrive after the CLI's
-scope filtering (`packages/core/scopes.ts`) has real usage behind it, not
-before.
+mode named directly in the source design: "any AI can read the vault."
+MCP support must arrive after the CLI's scope filtering
+(`packages/core/scopes.ts`) has real usage behind it, not before.
 
 No code, no schema, no endpoint here in V1.

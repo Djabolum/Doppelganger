@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * doppel — the Doppelganger CLI. The first real product (per the source
- * design: "Le CLI doit être le premier vrai produit. Pas l'extension.").
+ * design: "the CLI must be the first real product, not the extension").
  *
  * V1 MVP commands:
  *   doppel init

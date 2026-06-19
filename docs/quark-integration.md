@@ -51,7 +51,7 @@ POST /api/quark/intake/trust-receipt
 ```
 
 None of these exist on the Quark-AI side yet. Building them is a Quark-side
-chantier, not a Doppelganger one — `packages/adapters/quark/` stays a
+effort, not a Doppelganger one — `packages/adapters/quark/` stays a
 placeholder until that work happens.
 
 ## Planned mapping (for when the intake endpoints exist)

@@ -8,24 +8,24 @@
   "status": "architecture_exploration",
   "decisions": [
     {
-      "text": "Le module doit fonctionner local-only.",
+      "text": "The module must run local-only.",
       "confidence": "high",
       "authority": false
     },
     {
-      "text": "Quark-AI doit rester optionnel.",
+      "text": "Quark-AI must remain optional.",
       "confidence": "high",
       "authority": false
     }
   ],
   "open_questions": [
-    "Quel est le schéma minimal de dépôt fossile ?",
-    "Quelle UX rend le consentement fluide sans devenir lourd ?"
+    "What is the minimal schema for a fossil deposit?",
+    "What UX makes consent feel light rather than heavy?"
   ],
   "boundaries": [
-    "Ne pas traiter Quark-AI comme cerveau central.",
-    "Ne pas fusionner les comptes IA.",
-    "Ne pas créer de mémoire durable sans validation utilisateur."
+    "Do not treat Quark-AI as a central brain.",
+    "Do not merge AI accounts.",
+    "Do not create durable memory without user validation."
   ],
   "usable_as": "context_only",
   "created_at": "2026-06-18T11:00:00.000Z"

@@ -7,13 +7,13 @@ Scope: minimal
 Target: claude
 
 ## Preferences
-- Style de réponse: Répondre en couches, éviter les réponses génériques.
+- Response style: Answer in layers, avoid generic replies.
 
 ## Project Context
 _None._
 
 ## Boundaries
-- Do not transformer mes traces ou émotions en diagnostic.
+- Do not turn my traces or emotions into a diagnosis.
 
 ## Policy
 - authority: false

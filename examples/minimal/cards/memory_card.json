@@ -1,8 +1,8 @@
 {
   "id": "mem_8a1f2c3d9b00",
   "kind": "memory_card",
-  "label": "Style de réponse",
-  "content": "Répondre en couches, éviter les réponses génériques.",
+  "label": "Response style",
+  "content": "Answer in layers, avoid generic replies.",
   "sensitivity": "normal",
   "deep_allowed": false,
   "authority": false,

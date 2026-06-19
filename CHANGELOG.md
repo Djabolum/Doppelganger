@@ -93,7 +93,8 @@ Per the original MVP scope, these are tracked, not forgotten:
 - **`packages/adapters/quark/`** — no HTTP client. `README.md` explains
   that the Quark-AI backend does not yet expose the
   `POST /api/quark/intake/*` endpoints a real deposit would need; building
-  those is a Quark-side chantier, documented in `docs/quark-integration.md`.
+  those is a separate effort on the Quark-AI side, documented in
+  `docs/quark-integration.md`.
 - **`schemas/handoff_card.schema.json`, `fossil_trace.schema.json`,
   `quark_deposit.schema.json`** — not written. The original design
   explicitly scoped V0 to the four schemas that exist; these three were

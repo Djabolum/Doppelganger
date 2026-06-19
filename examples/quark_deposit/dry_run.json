@@ -2,7 +2,7 @@
   "would_send": true,
   "kind": "fossil_trace",
   "id": "fos_2b6e91d0c4a7",
-  "label": "Réponses en couches — pattern stable",
+  "label": "Layered responses — stable pattern",
   "continuity_envelope": {
     "authority": false,
     "memory_authority": false,

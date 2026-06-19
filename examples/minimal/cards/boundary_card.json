@@ -1,8 +1,8 @@
 {
   "id": "bnd_4e7d0a1c5f33",
   "kind": "boundary_card",
-  "label": "Non-diagnostic",
-  "content": "transformer mes traces ou émotions en diagnostic",
+  "label": "No diagnosis",
+  "content": "turn my traces or emotions into a diagnosis",
   "sensitivity": "normal",
   "deep_allowed": false,
   "authority": false,

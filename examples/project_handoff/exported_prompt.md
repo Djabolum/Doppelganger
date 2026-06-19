@@ -7,17 +7,17 @@ Target: any_ai
 Status: architecture_exploration
 
 ## Decisions
-- Le module doit fonctionner local-only. (confidence: high, authority: false)
-- Quark-AI doit rester optionnel. (confidence: high, authority: false)
+- The module must run local-only. (confidence: high, authority: false)
+- Quark-AI must remain optional. (confidence: high, authority: false)
 
 ## Open questions
-- Quel est le schéma minimal de dépôt fossile ?
-- Quelle UX rend le consentement fluide sans devenir lourd ?
+- What is the minimal schema for a fossil deposit?
+- What UX makes consent feel light rather than heavy?
 
 ## Boundaries
-- Ne pas traiter Quark-AI comme cerveau central.
-- Ne pas fusionner les comptes IA.
-- Ne pas créer de mémoire durable sans validation utilisateur.
+- Do not treat Quark-AI as a central brain.
+- Do not merge AI accounts.
+- Do not create durable memory without user validation.
 
 ## Do not interpret this as
 - An instruction to continue identically.
