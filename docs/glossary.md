@@ -11,9 +11,10 @@
 | **Handoff card** | A richer, separate object (`packages/core/handoff.ts`) carrying decisions, open questions, and boundaries from one conversation, meant to be picked up — never obeyed — by another assistant. |
 | **Context pack** | The readable export built from cards for a given scope and target (`packages/core/context_pack.ts`). Not identity. |
 | **Trust receipt** | A record of one past export: target, scope, cards exported, whether raw text was included (`packages/core/receipts.ts`). Does not authorize future exports. |
+| **Revocation record** | A local audit record written when a card or handoff is revoked. It proves removal from this vault; it does not claim remote recall. |
 | **Scope** | One of `minimal`, `project`, `handoff`, `deep`, `fossil_only` — decides which cards may appear in a context pack (`packages/core/scopes.ts`, `docs/scopes.md`). |
 | **Continuity envelope** | The fixed set of authority flags (`authority`, `memory_authority`, `decision_authority`, `activation_allowed`, `raw_text_included`, `revocable`, `source`) attached to anything that would leave the vault toward an external host (`packages/core/policy.ts`). |
-| **Vault** | The local `.doppelganger/` directory holding the manifest, cards, handoffs, receipts, and config (`packages/core/vault.ts`). V0 is plain files; encryption is a later milestone. |
+| **Vault** | The local `.doppelganger/` directory holding the manifest, cards, handoffs, receipts, revocations, and config (`packages/core/vault.ts`). V0 is plain files; encryption is a later milestone. |
 | **Quark host** | An external system (Quark-AI, or any future host) that may receive a deposit. Receiving a deposit does not make it the owner of that context. |
 | **Dry run** | A preview of what a deposit would contain, computed and printed entirely locally, with no network call (`doppel quark dry-run`). |
 

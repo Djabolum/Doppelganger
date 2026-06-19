@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-06-19 — Integrity, scope, consent, and test hardening
+
+Closed the nine findings from the full VPS-context-aware repository audit:
+
+1. Vault files are now treated as untrusted input. Runtime validators mirror
+   the JSON schemas, reject unknown fields, name malformed files, and rerun
+   policy checks on every loaded card and handoff.
+2. `fossil_only` context packs now expose their selected fossils in a
+   dedicated `Fossil Traces` section instead of silently dropping them.
+3. `context build --scope handoff` now refuses with a pointer to
+   `handoff export --id`, instead of producing a misleading empty pack.
+4. Context and handoff exports always write trust receipts. The
+   `--no-receipt` bypass was removed; handoff ids are tracked separately from
+   generic card ids.
+5. Local revocation is now executable through `card revoke` and
+   `handoff revoke`, with an append-only `revocations.jsonl` audit trail.
+6. Vault directories and files are created/hardened as `0700` and `0600`.
+7. Each CLI command rejects unknown flags, so typos no longer silently
+   downgrade sensitivity or alter behavior.
+8. `quark dry-run` prints the exact artifact plus continuity envelope that
+   would be sent, while remaining fully local and network-free.
+9. Added a Node test suite covering tampering, corruption, scope behavior,
+   receipts, revocation, permissions, CLI parsing, and dry-run disclosure.
+   Added the missing handoff JSON schema and aligned examples/docs.
+
 ## 2026-06-19 — Pre-merge audit: policy chokepoint, scope leak, CLI parsing
 
 Full code review pass (10 angles, verified live against the actual CLI, not

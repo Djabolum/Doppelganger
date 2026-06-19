@@ -20,6 +20,7 @@ export interface ContextPack {
     preferences: Card[];
     project_context: Card[];
     boundaries: Card[];
+    fossil_traces: Card[];
   };
   policy: ContextPackPolicy;
 }
@@ -31,6 +32,11 @@ export interface BuildContextPackOptions {
 }
 
 export function buildContextPack(options: BuildContextPackOptions): ContextPack {
+  if (options.scope === "handoff") {
+    throw new Error(
+      "context_pack: handoff scope requires a specific HandoffCard; use renderHandoffMarkdown instead"
+    );
+  }
   const allowed = filterCardsForScope(options.cards, options.scope).map((c) =>
     projectCardForScope(c, options.scope)
   );
@@ -38,6 +44,7 @@ export function buildContextPack(options: BuildContextPackOptions): ContextPack 
   const preferences = allowed.filter((c) => c.kind === "memory_card");
   const project_context = allowed.filter((c) => c.kind === "project_card");
   const boundaries = allowed.filter((c) => c.kind === "boundary_card");
+  const fossil_traces = allowed.filter((c) => c.kind === "fossil_trace");
 
   const policy: ContextPackPolicy = {
     authority: false,
@@ -53,7 +60,7 @@ export function buildContextPack(options: BuildContextPackOptions): ContextPack 
     scope: options.scope,
     target: options.target,
     generated_at: new Date().toISOString(),
-    sections: { preferences, project_context, boundaries },
+    sections: { preferences, project_context, boundaries, fossil_traces },
     policy,
   };
 }
@@ -95,6 +102,16 @@ export function renderContextPackMarkdown(pack: ContextPack): string {
   } else {
     for (const c of pack.sections.boundaries) {
       lines.push(`- Do not ${c.content ?? c.label}.`);
+    }
+  }
+  lines.push("");
+
+  lines.push("## Fossil Traces");
+  if (pack.sections.fossil_traces.length === 0) {
+    lines.push("_None._");
+  } else {
+    for (const c of pack.sections.fossil_traces) {
+      lines.push(`- ${c.label}`);
     }
   }
   lines.push("");

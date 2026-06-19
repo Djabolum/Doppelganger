@@ -73,3 +73,13 @@ as a value `packages/core/policy.ts` actively asserts before any save or
 export completes. If a future change makes that assertion pass while the
 object actually carries authority, that is the bug to fix first, before
 anything else.
+
+## Revocation is real, but local
+
+`revocable: true` is backed by explicit `card revoke` and `handoff revoke`
+commands. Revocation removes the local artifact and appends a record to
+`revocations.jsonl`.
+
+It does not pretend to recall copies already pasted into another assistant
+or exported to a file. A trust receipt tells the user where an earlier copy
+went; local revocation prevents future exports from this vault.

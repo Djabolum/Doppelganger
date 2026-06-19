@@ -14,6 +14,8 @@ export interface TrustReceipt {
   target: string;
   scope: string;
   cards_exported: string[];
+  /** Kept separate so a handoff is never mislabeled as a generic card. */
+  handoffs_exported: string[];
   raw_text_included: boolean;
   created_at: string;
 }
@@ -22,6 +24,7 @@ export interface CreateReceiptOptions {
   target: string;
   scope: string;
   cardsExported: string[];
+  handoffsExported?: string[];
   rawTextIncluded: boolean;
 }
 
@@ -32,6 +35,7 @@ export function createReceipt(options: CreateReceiptOptions): TrustReceipt {
     target: options.target,
     scope: options.scope,
     cards_exported: options.cardsExported,
+    handoffs_exported: options.handoffsExported ?? [],
     raw_text_included: options.rawTextIncluded,
     created_at: new Date().toISOString(),
   };
@@ -40,6 +44,7 @@ export function createReceipt(options: CreateReceiptOptions): TrustReceipt {
 export function formatReceiptLine(receipt: TrustReceipt): string {
   return (
     `${receipt.created_at}  ${receipt.id}  target=${receipt.target}  scope=${receipt.scope}  ` +
-    `cards=${receipt.cards_exported.length}  raw_text_included=${receipt.raw_text_included}`
+    `cards=${receipt.cards_exported.length}  handoffs=${receipt.handoffs_exported.length}  ` +
+    `raw_text_included=${receipt.raw_text_included}`
   );
 }

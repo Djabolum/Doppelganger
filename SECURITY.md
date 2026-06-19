@@ -39,6 +39,10 @@ mitigation before any public disclosure of details.
   deposit envelope before it is persisted or sent anywhere. A change that
   makes that check pass while the object actually carries authority is a
   security bug, not a style issue.
+- **Disk content is untrusted input.** Every manifest, config, card, handoff,
+  and receipt is runtime-validated when read. Unknown fields are rejected,
+  malformed JSON names the affected file, and policy invariants are checked
+  again before any loaded object can be exported.
 - **Local-first means local by default, not local by promise.** There is
   no background process, no scheduler, no daemon in this codebase. Every
   command in `packages/cli` runs once and exits.
@@ -47,10 +51,10 @@ mitigation before any public disclosure of details.
   (`doppel quark dry-run`) is inert by default — see
   `docs/threat-model.md` for the full breakdown of what is, and is not,
   built.
-- **Receipts, not trust.** Every export through `doppel context build`
-  writes a `trust_receipt` (`packages/core/receipts.ts`) recording exactly
-  what left the vault and when — so a leak or a mistake is auditable after
-  the fact, not just "trusted not to happen."
+- **Receipts, not trust.** Every export through `doppel context build` or
+  `doppel handoff export` writes a `trust_receipt`
+  (`packages/core/receipts.ts`) recording exactly what left the vault and
+  when. There is no receipt bypass flag.
 
 ## What Doppelganger will never ask for
 
@@ -73,7 +77,8 @@ would report any other vulnerability.
 - The vault (`.doppelganger/`) is plain JSON/JSONL on disk in V0. It is
   not encrypted yet. Treat it like any other local file containing
   personal notes: protect it with normal filesystem and disk permissions.
-  Encryption at rest is a planned V1 follow-up, not a V1 MVP claim.
+  Doppelganger creates directories as `0700` and files as `0600`.
+  Encryption at rest is a planned follow-up, not a V1 MVP claim.
 - Nothing in this repository assumes a multi-user environment. The vault
   is single-user, single-machine, by design.
 

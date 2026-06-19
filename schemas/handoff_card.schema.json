@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/handoff_card.schema.json",
+  "title": "Handoff Card",
+  "description": "A user-approved continuity handoff. Handoff card != command.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "kind",
+    "topic",
+    "from_surface",
+    "target_surface",
+    "status",
+    "decisions",
+    "open_questions",
+    "boundaries",
+    "usable_as",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^hnd_[0-9a-f]+$" },
+    "schema_version": { "const": "0.1" },
+    "kind": { "const": "handoff_card" },
+    "topic": { "type": "string", "minLength": 1 },
+    "from_surface": { "type": "string", "minLength": 1 },
+    "target_surface": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["architecture_exploration", "open", "closed"] },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text", "confidence", "authority"],
+        "additionalProperties": false,
+        "properties": {
+          "text": { "type": "string", "minLength": 1 },
+          "confidence": { "enum": ["low", "medium", "high"] },
+          "authority": { "const": false }
+        }
+      }
+    },
+    "open_questions": { "type": "array", "items": { "type": "string" } },
+    "boundaries": { "type": "array", "items": { "type": "string" } },
+    "usable_as": { "const": "context_only" },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

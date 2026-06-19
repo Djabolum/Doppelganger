@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/revocation_record.schema.json",
+  "title": "Revocation Record",
+  "description": "A local audit record proving an artifact was removed from this vault.",
+  "type": "object",
+  "required": ["id", "kind", "artifact_id", "artifact_kind", "revoked_at"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^rev_[0-9a-f]+$" },
+    "kind": { "enum": ["card_revocation", "handoff_revocation"] },
+    "artifact_id": { "type": "string", "minLength": 1 },
+    "artifact_kind": { "type": "string", "minLength": 1 },
+    "reason": { "type": "string", "minLength": 1 },
+    "revoked_at": { "type": "string", "format": "date-time" }
+  }
+}

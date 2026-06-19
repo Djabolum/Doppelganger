@@ -59,6 +59,9 @@ node dist/packages/cli/index.js card add boundary \
 node dist/packages/cli/index.js context build --scope minimal --target claude
 
 node dist/packages/cli/index.js status
+
+# Remove a local card while keeping a revocation audit record
+node dist/packages/cli/index.js card revoke --id <card_id>
 ```
 
 Once installed globally (or linked), the same commands run as `doppel init`,
@@ -69,11 +72,15 @@ produces, and `docs/scopes.md` for what each scope includes.
 
 ## Status
 
-V1 MVP: `packages/core`, `packages/cli`, the four V0 `schemas/`, `examples/`,
+V1 MVP: `packages/core`, `packages/cli`, the V0 `schemas/`, `examples/`,
 and `docs/`. Deferred and explicitly tracked (not silently dropped):
 `packages/browser-extension/`, `packages/adapters/mcp/`, a real
 `packages/adapters/quark/` deposit, vault encryption, and the cross-AI
 observatory. See `CHANGELOG.md` for the full breakdown.
+
+The vault validates every object again when it is read, uses private
+filesystem permissions (`0700` directories, `0600` files), records every
+context/handoff export, and exposes explicit local revocation commands.
 
 ## Contributing
 
@@ -85,6 +92,16 @@ agentivity) regardless of code quality.
 
 See `SECURITY.md` to report a vulnerability, and `docs/threat-model.md`
 for what this project does and does not do by design.
+
+## Verification
+
+```bash
+npm test
+```
+
+The suite covers vault tampering, malformed JSON, scope isolation, mandatory
+receipts, revocation, filesystem permissions, CLI flag validation, and exact
+Quark dry-run disclosure.
 
 ## License
 

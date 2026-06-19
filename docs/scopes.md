@@ -29,6 +29,8 @@ Adds the decisions and open questions of a previous conversation.
   boundaries (see `packages/core/handoff.ts`).
 - Excluded: generic cards entirely — a handoff scope is built from
   `doppel handoff export`, not `doppel context build`.
+- `doppel context build --scope handoff` refuses explicitly instead of
+  producing an empty pack.
 - Use when: continuing a conversation in a different assistant.
 
 ## `deep`
@@ -49,6 +51,7 @@ No readable sensitive content at all.
   what the card itself carries.
 - Use when: the target is Quark-AI, or any other host that should receive
   structured signals, never prose.
+- Exported under the dedicated `Fossil Traces` section of the context pack.
 
 ## Choosing a scope
 
