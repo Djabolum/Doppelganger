@@ -91,7 +91,7 @@ export function renderHandoffMarkdown(card: HandoffCard): string {
     lines.push("_None recorded._");
   } else {
     for (const d of card.decisions) {
-      lines.push(`- ${d.text} (confidence: ${d.confidence}, authority: false)`);
+      lines.push(`- ${d.text} (confidence: ${d.confidence}, authority: ${d.authority})`);
     }
   }
   lines.push("");

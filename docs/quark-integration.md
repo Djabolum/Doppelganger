@@ -10,16 +10,17 @@ what already exists today, and what is deliberately not built yet.
 `packages/cli/index.ts::cmdQuarkDryRun`):
 
 - builds a `continuity_envelope` locally (`packages/core/policy.ts`)
-- prints exactly what *would* be sent
+- prints the exact artifact and envelope that *would* be sent
 - makes **no network call**
 
 ```
-Would send:
-- kind: fossil_trace
-- id: fos_2b6e91d0c4a7
-- raw_text_included: false
-- authority: false
-- target: Quark-AI
+Exact payload preview:
+{
+  "kind": "fossil_trace",
+  "artifact": { "...": "the complete local artifact" },
+  "continuity_envelope": { "authority": false, "...": "..." },
+  "target": "Quark-AI"
+}
 
 (dry run only — no network call was made)
 ```
@@ -95,9 +96,8 @@ traces already use elsewhere on this VPS (`output != fossil`,
 
 - No HTTP client to Quark anywhere in `packages/adapters/quark/`.
 - No `--confirm` path on `doppel quark deposit`.
-- No `handoff_card.schema.json`, `fossil_trace.schema.json`, or
-  `quark_deposit.schema.json` under `schemas/` — only the four V0 schemas
-  (`manifest`, `card`, `context_pack`, `trust_receipt`) ship in V1, per the
-  original MVP scope. These three are the natural next schemas once the
-  Quark-side intake endpoints exist and the shapes are no longer
-  speculative.
+- No separate `fossil_trace.schema.json` or `quark_deposit.schema.json`
+  exists yet. Fossils are currently constrained by `card.schema.json`;
+  the deposit shape stays local and provisional until Quark-side intake
+  endpoints exist. `handoff_card.schema.json` now ships because handoffs are
+  already a stable local/exported object.

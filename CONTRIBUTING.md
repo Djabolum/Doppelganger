@@ -62,10 +62,10 @@ with a pointer to this file, not negotiated line by line.
 3. Before opening a PR:
    ```bash
    npm install
-   npm run build
+   npm test
    ```
-   There is no test suite yet; until there is, describe in the PR
-   description how you verified the change (commands run, output seen).
+   Add a regression test for policy, scope, receipt, vault, or CLI changes.
+   Also describe any manual verification that a test cannot express.
 4. New invariants or scopes should come with a `docs/` update in the same
    PR — not as a follow-up.
 

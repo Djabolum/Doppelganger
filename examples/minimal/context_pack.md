@@ -15,6 +15,9 @@ _None._
 ## Boundaries
 - Do not turn my traces or emotions into a diagnosis.
 
+## Fossil Traces
+_None._
+
 ## Policy
 - authority: false
 - memory_write_allowed: false

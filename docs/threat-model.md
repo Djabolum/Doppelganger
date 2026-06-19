@@ -32,12 +32,15 @@ This document exists so the boundary is explicit, not assumed.
 |---|---|
 | Add a background sync "for convenience" | No process manager, scheduler, or daemon exists to attach one to. Any addition of this kind is a doctrine violation (invariant #2, `docs/doctrine.md`) before it is a code review comment. |
 | Let `authority` default to `true` somewhere | `policy.ts::assertCardInvariants`/`assertHandoffInvariants`/`assertContinuityEnvelope` reject `authority === true` on every card, handoff, and deposit envelope — checked again at the `vault.ts` write boundary, not just where the object is first constructed, so a card built any other way still gets caught. A default flip fails loudly, not silently. |
+| Edit a vault JSON file after it was safely written | Runtime validators reject malformed JSON, unknown fields, invalid shapes, and policy violations every time an object is read. Rendering never launders a tampered `authority: true` into a displayed `authority: false`. |
 | Smuggle raw user text into a `fossil_only` export | `scopes.ts::projectCardForScope` strips `content` from every card under the `fossil_only` scope, regardless of what the card's own `sensitivity` claims. |
 | Create a `fossil_trace` carrying narrative content (re-creating "user memory" inside the fossil store) | `policy.ts::assertCardInvariants` rejects `content` on `fossil_trace`, and caps its `label` at 60 characters — a fossil label must name a structural pattern, never restate a preference in prose, and a long narrative sentence can no longer be smuggled through the `label` field instead of `content`. Checked at creation (`cards.ts::createCard`) and again at the `vault.ts` write boundary. |
 | Let a sensitive card leak into `--scope deep` without the user opting it in | `scopes.ts::isCardAllowedInScope`'s `deep` case requires `deep_allowed === true`, OR (kind is `project_card`/`boundary_card` AND `sensitivity !== "sensitive"`) — a `sensitivity: sensitive` card only reaches `deep` if explicitly marked `deep_allowed`, matching the scope's own "never the default" description. |
 | Auto-confirm a Quark deposit | `doppel quark deposit` is hard-coded to print a refusal and exit 1 (see `packages/cli/index.ts::cmdQuarkDeposit`) until the Quark-side intake endpoints exist. There is no `--confirm` path to bypass. |
 | Browser extension silently injecting context | Not built. When it is built, `docs/browser-extension-policy.md` is the contract it must follow — manual actions only, no background page access. |
 | Leak the vault path or contents over MCP | `packages/adapters/mcp/` is an empty placeholder. No MCP server exists yet to leak through. |
+| Skip the audit trail with an export flag | Context and handoff exports always append a trust receipt. The former `--no-receipt` escape hatch no longer exists. |
+| Treat `revocable: true` as remote recall | Revocation is explicitly local: it removes the vault artifact and records the act, but never claims to erase copies already exported elsewhere. |
 
 ## What is genuinely deferred (not silently dropped)
 

@@ -9,17 +9,18 @@
   "properties": {
     "schema_version": { "const": "0.1" },
     "kind": { "const": "context_pack" },
-    "scope": { "enum": ["minimal", "project", "handoff", "deep", "fossil_only"] },
+    "scope": { "enum": ["minimal", "project", "deep", "fossil_only"] },
     "target": { "type": "string", "minLength": 1 },
     "generated_at": { "type": "string", "format": "date-time" },
     "sections": {
       "type": "object",
-      "required": ["preferences", "project_context", "boundaries"],
+      "required": ["preferences", "project_context", "boundaries", "fossil_traces"],
       "additionalProperties": false,
       "properties": {
         "preferences": { "type": "array", "items": { "$ref": "card.schema.json" } },
         "project_context": { "type": "array", "items": { "$ref": "card.schema.json" } },
-        "boundaries": { "type": "array", "items": { "$ref": "card.schema.json" } }
+        "boundaries": { "type": "array", "items": { "$ref": "card.schema.json" } },
+        "fossil_traces": { "type": "array", "items": { "$ref": "card.schema.json" } }
       }
     },
     "policy": {
