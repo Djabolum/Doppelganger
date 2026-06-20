@@ -24,4 +24,5 @@ _None._
 - authority: false
 - memory_write_allowed: false
 - activation_allowed: false
-- raw_text_included: true
+- raw_conversation_included: false
+- card_content_included: true

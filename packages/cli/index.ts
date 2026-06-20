@@ -6,6 +6,7 @@
  * V1 MVP commands:
  *   doppel init
  *   doppel card add <kind> --label <label> [--content <text>] [--sensitivity ...] [--deep-allowed]
+ *   doppel card import --from markdown --file <path> (--dry-run | --confirm)
  *   doppel card list [<kind>]
  *   doppel card revoke --id <id> [--reason <text>]
  *   doppel context build --scope <scope> --target <target> [--format markdown|json] [--out <file>]
@@ -35,6 +36,7 @@ import { createReceipt, formatReceiptDetails, formatReceiptLine } from "../core/
 import { buildContinuityEnvelope, assertContinuityEnvelope } from "../core/policy";
 import { exportMarkdown, exportJson, copyToClipboard } from "../adapters/file-export";
 import { renderDoctorReport, runDoctor } from "../core/doctor";
+import { loadMarkdownCard } from "../core/markdown_import";
 
 interface ParsedArgs {
   positional: string[];
@@ -47,7 +49,7 @@ interface ParsedArgs {
  * otherwise a --content/--label value the user wrote starting with "--"
  * would be silently dropped and replaced with the literal string "true".
  */
-const BOOLEAN_FLAGS = new Set(["deep-allowed", "confirm"]);
+const BOOLEAN_FLAGS = new Set(["deep-allowed", "dry-run", "confirm"]);
 
 function parseArgs(argv: string[]): ParsedArgs {
   const positional: string[] = [];
@@ -118,6 +120,7 @@ function printUsage(): void {
       "Usage:",
       "  doppel init",
       "  doppel card add <memory|boundary|project|fossil> --label <label> [--content <text>] [--sensitivity public|normal|sensitive] [--deep-allowed]",
+      "  doppel card import --from markdown --file <path> (--dry-run | --confirm)",
       "  doppel card list [<kind>]",
       "  doppel card revoke --id <id> [--reason <text>]",
       "  doppel context build --scope <minimal|project|deep|fossil_only> --target <ai_name> [--format markdown|json] [--out <file>]",
@@ -169,6 +172,51 @@ function cmdCardAdd(args: ParsedArgs): void {
   });
   vault.saveCard(card);
   process.stdout.write(`Added ${card.kind} ${card.id} — "${card.label}"\n`);
+}
+
+function cmdCardImport(args: ParsedArgs): void {
+  assertAllowedFlags(args, ["from", "file", "dry-run", "confirm"], "card import");
+  if (args.positional.length > 0) {
+    fail(`card import: unexpected argument "${args.positional[0]}"`);
+  }
+  const source = flag(args, "from");
+  const file = flag(args, "file");
+  const dryRun = args.flags.has("dry-run");
+  const confirm = args.flags.has("confirm");
+
+  if (source !== "markdown") {
+    fail('card import: --from must be "markdown"');
+  }
+  if (!file) fail("card import: --file is required");
+  if (!dryRun && !confirm) {
+    fail(
+      "card import: refusing import without --dry-run or --confirm.\n" +
+        "Markdown/Notion content is not a valid continuity object until validated by Doppelganger."
+    );
+  }
+  if (dryRun && confirm) {
+    fail(
+      "card import: choose exactly one of --dry-run or --confirm.\n" +
+        "Markdown/Notion content is not a valid continuity object until validated by Doppelganger."
+    );
+  }
+
+  const imported = loadMarkdownCard(file);
+  if (dryRun) {
+    process.stdout.write("Validated canonical card preview:\n");
+    process.stdout.write(JSON.stringify(imported.card, null, 2) + "\n");
+    process.stdout.write(
+      "\n(dry run only — the vault was not modified; id and timestamps are provisional)\n"
+    );
+    return;
+  }
+
+  const vault = new Vault();
+  vault.saveCard(imported.card);
+  process.stdout.write(
+    `Imported ${imported.card.kind} ${imported.card.id} from ${imported.file} — ` +
+      `"${imported.card.label}"\n`
+  );
 }
 
 function cmdCardList(args: ParsedArgs): void {
@@ -241,7 +289,7 @@ function cmdContextBuild(args: ParsedArgs): void {
     target: target!,
     scope: scope!,
     cardsExported: exportedIds,
-    rawTextIncluded: pack.policy.raw_text_included,
+    cardContentIncluded: pack.policy.card_content_included,
   });
   vault.appendReceipt(receipt);
   process.stderr.write(`Receipt written: ${receipt.id}\n`);
@@ -318,7 +366,7 @@ function cmdHandoffExport(args: ParsedArgs): void {
     scope: "handoff",
     cardsExported: [],
     handoffsExported: [handoff!.id],
-    rawTextIncluded: false,
+    cardContentIncluded: false,
   });
   vault.appendReceipt(receipt);
   process.stderr.write(`Receipt written: ${receipt.id}\n`);
@@ -364,7 +412,7 @@ function cmdQuarkDryRun(args: ParsedArgs): void {
   if (!type || !id) fail("quark dry-run: --type and --id are required");
 
   const vault = new Vault();
-  let rawTextIncluded = false;
+  let cardContentIncluded = false;
   let artifact: Card | ReturnType<typeof createHandoffCard>;
 
   let kind: string;
@@ -373,7 +421,7 @@ function cmdQuarkDryRun(args: ParsedArgs): void {
     if (!handoff) fail(`quark dry-run: no handoff found with id "${id}"`);
     kind = "handoff_card";
     artifact = handoff!;
-    rawTextIncluded = false; // handoff cards never carry raw conversation text
+    cardContentIncluded = false;
   } else {
     const expectedKind = resolveCardKind(type!);
     const card = vault.findCard(id!);
@@ -383,10 +431,10 @@ function cmdQuarkDryRun(args: ParsedArgs): void {
     }
     kind = card!.kind;
     artifact = card!;
-    rawTextIncluded = card!.kind !== "fossil_trace" && !!card!.content;
+    cardContentIncluded = card!.kind !== "fossil_trace" && !!card!.content;
   }
 
-  const envelope = buildContinuityEnvelope(rawTextIncluded);
+  const envelope = buildContinuityEnvelope(cardContentIncluded);
   assertContinuityEnvelope(envelope, "quark dry-run");
   const preview = {
     would_send: true,
@@ -479,6 +527,7 @@ function main(): void {
     case "card": {
       const args = parseArgs(rest);
       if (sub === "add") return cmdCardAdd(args);
+      if (sub === "import") return cmdCardImport(args);
       if (sub === "list") return cmdCardList(args);
       if (sub === "revoke") return cmdCardRevoke(args);
       return fail(`unknown subcommand "card ${sub}"`);

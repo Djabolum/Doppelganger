@@ -145,6 +145,29 @@ test("context and handoff exports always write receipts", (t) => {
   assert.deepEqual(receipts[1].handoffs_exported, [handoffId]);
 });
 
+test("legacy V1 receipts remain readable after disclosure field split", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const legacy = {
+    id: "rcpt_abcdef123456",
+    kind: "trust_receipt",
+    target: "claude",
+    scope: "minimal",
+    cards_exported: ["mem_abcdef123456"],
+    handoffs_exported: [],
+    raw_text_included: true,
+    created_at: "2026-06-19T12:00:00.000Z",
+  };
+  fs.writeFileSync(
+    path.join(cwd, ".doppelganger/receipts.jsonl"),
+    JSON.stringify(legacy) + "\n"
+  );
+
+  const result = run(cwd, ["receipt", "show", "--id", legacy.id]);
+  assert.match(result.stdout, /Raw conversation included: false/);
+  assert.match(result.stdout, /Card content included: true/);
+});
+
 test("revocation removes local artifacts and leaves an audit record", (t) => {
   const cwd = workspace(t);
   init(cwd);
@@ -183,6 +206,99 @@ test("unknown flags fail loudly", (t) => {
   assert.match(result.stderr, /unknown flag --sensitivty/);
 });
 
+test("Markdown card import requires dry-run or confirm", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const fixture = path.resolve(__dirname, "../examples/notion-like/cards.md");
+  const result = run(
+    cwd,
+    ["card", "import", "--from", "markdown", "--file", fixture],
+    1
+  );
+  assert.match(result.stderr, /refusing import without --dry-run or --confirm/i);
+  assert.match(result.stderr, /not a valid continuity object until validated/);
+  assert.equal(run(cwd, ["card", "list"]).stdout, "No cards.\n");
+});
+
+test("Markdown card import dry-run validates without writing", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const fixture = path.resolve(__dirname, "../examples/notion-like/cards.md");
+  const result = run(cwd, [
+    "card",
+    "import",
+    "--from",
+    "markdown",
+    "--file",
+    fixture,
+    "--dry-run",
+  ]);
+  assert.match(result.stdout, /Validated canonical card preview/);
+  assert.match(result.stdout, /"kind": "project_card"/);
+  assert.match(result.stdout, /"authority": false/);
+  assert.match(result.stdout, /the vault was not modified; id and timestamps are provisional/);
+  assert.equal(run(cwd, ["card", "list"]).stdout, "No cards.\n");
+});
+
+test("Markdown card import confirm persists only the canonical card", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const fixture = path.resolve(__dirname, "../examples/notion-like/cards.md");
+  const result = run(cwd, [
+    "card",
+    "import",
+    "--from",
+    "markdown",
+    "--file",
+    fixture,
+    "--confirm",
+  ]);
+  assert.match(result.stdout, /Imported project_card prj_/);
+  const cardFile = firstJson(path.join(cwd, ".doppelganger/cards/project_card"));
+  const card = JSON.parse(fs.readFileSync(cardFile, "utf8"));
+  assert.equal(card.kind, "project_card");
+  assert.equal(card.authority, false);
+  assert.equal(card.revocable, true);
+  assert.equal(card.label, "Doppelganger roadmap");
+});
+
+test("Markdown card import rejects authored policy and unsupported fossils", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  const withAuthority = path.join(cwd, "authority.md");
+  fs.writeFileSync(
+    withAuthority,
+    "---\nkind: project\nlabel: Unsafe\nauthority: true\n---\nText\n"
+  );
+  const unknown = run(
+    cwd,
+    ["card", "import", "--from", "markdown", "--file", withAuthority, "--dry-run"],
+    1
+  );
+  assert.match(unknown.stderr, /unknown front matter field "authority"/);
+
+  const fossil = path.join(cwd, "fossil.md");
+  fs.writeFileSync(fossil, "---\nkind: fossil\nlabel: Narrative fossil\n---\nRaw note\n");
+  const unsupported = run(
+    cwd,
+    ["card", "import", "--from", "markdown", "--file", fossil, "--dry-run"],
+    1
+  );
+  assert.match(unsupported.stderr, /fossil traces and handoffs require dedicated structures/);
+
+  const embedded = path.join(cwd, "embedded.md");
+  fs.writeFileSync(
+    embedded,
+    "---\nkind: project\nlabel: Remote embed\n---\n![tracking](https://example.test/pixel.png)\n"
+  );
+  const remoteEmbed = run(
+    cwd,
+    ["card", "import", "--from", "markdown", "--file", embedded, "--dry-run"],
+    1
+  );
+  assert.match(remoteEmbed.stderr, /remote embedded images are not allowed/);
+});
+
 test("Quark dry-run reveals the exact local payload", (t) => {
   const cwd = workspace(t);
   init(cwd);
@@ -200,6 +316,9 @@ test("Quark dry-run reveals the exact local payload", (t) => {
   assert.match(result.stdout, /Exact payload preview/);
   assert.match(result.stdout, /Answer in layers/);
   assert.match(result.stdout, /"authority": false/);
+  assert.match(result.stdout, /"raw_conversation_included": false/);
+  assert.match(result.stdout, /"card_content_included": true/);
+  assert.doesNotMatch(result.stdout, /raw_text_included/);
   assert.match(result.stdout, /no network call was made/);
 });
 

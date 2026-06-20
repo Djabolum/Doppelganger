@@ -28,7 +28,7 @@ Delivered field hardening:
 - readable receipt detail
 - clearer errors, examples, and field cases
 
-Next bounded addition:
+Delivered Markdown boundary:
 
 - import human-authored cards from simple Markdown files
 - accept exports from Notion-like writing tools without connecting to their
@@ -46,7 +46,7 @@ Notion-like Markdown file
   -> canonical local card
 ```
 
-The draft Markdown boundary is in `docs/markdown-card-import.md`.
+The Markdown boundary is in `docs/markdown-card-import.md`.
 
 Notion content is not a valid continuity object by itself. V1.1 adds no
 Notion API, synchronization, account connection, or network capability.

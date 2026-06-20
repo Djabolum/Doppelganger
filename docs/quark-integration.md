@@ -70,7 +70,8 @@ Every deposit must carry a strict envelope, never folded into Quark's own
     "memory_authority": false,
     "decision_authority": false,
     "activation_allowed": false,
-    "raw_text_included": false,
+    "raw_conversation_included": false,
+    "card_content_included": false,
     "revocable": true,
     "source": "doppelganger"
   }

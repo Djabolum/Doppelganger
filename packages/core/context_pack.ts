@@ -12,7 +12,7 @@ import { resolveTargetProfile, TargetProfile } from "./targets";
 export interface ContextPackPolicy extends ExportPolicyLike {}
 
 export interface ContextPack {
-  schema_version: "0.2";
+  schema_version: "0.3";
   kind: "context_pack";
   scope: ScopeName;
   target: string;
@@ -52,12 +52,14 @@ export function buildContextPack(options: BuildContextPackOptions): ContextPack 
     authority: false,
     memory_write_allowed: false,
     activation_allowed: false,
-    raw_text_included: options.scope !== "fossil_only" && allowed.some((c) => !!c.content),
+    raw_conversation_included: false,
+    card_content_included:
+      options.scope !== "fossil_only" && allowed.some((c) => !!c.content),
   };
   assertExportPolicy(policy, "context_pack");
 
   return {
-    schema_version: "0.2",
+    schema_version: "0.3",
     kind: "context_pack",
     scope: options.scope,
     target: options.target,
@@ -125,7 +127,8 @@ export function renderContextPackMarkdown(pack: ContextPack): string {
   lines.push(`- authority: ${pack.policy.authority}`);
   lines.push(`- memory_write_allowed: ${pack.policy.memory_write_allowed}`);
   lines.push(`- activation_allowed: ${pack.policy.activation_allowed}`);
-  lines.push(`- raw_text_included: ${pack.policy.raw_text_included}`);
+  lines.push(`- raw_conversation_included: ${pack.policy.raw_conversation_included}`);
+  lines.push(`- card_content_included: ${pack.policy.card_content_included}`);
   lines.push("");
 
   return lines.join("\n");

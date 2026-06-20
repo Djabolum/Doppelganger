@@ -16,7 +16,8 @@ export interface TrustReceipt {
   cards_exported: string[];
   /** Kept separate so a handoff is never mislabeled as a generic card. */
   handoffs_exported: string[];
-  raw_text_included: boolean;
+  raw_conversation_included: false;
+  card_content_included: boolean;
   created_at: string;
 }
 
@@ -25,7 +26,7 @@ export interface CreateReceiptOptions {
   scope: string;
   cardsExported: string[];
   handoffsExported?: string[];
-  rawTextIncluded: boolean;
+  cardContentIncluded: boolean;
 }
 
 export function createReceipt(options: CreateReceiptOptions): TrustReceipt {
@@ -36,7 +37,8 @@ export function createReceipt(options: CreateReceiptOptions): TrustReceipt {
     scope: options.scope,
     cards_exported: options.cardsExported,
     handoffs_exported: options.handoffsExported ?? [],
-    raw_text_included: options.rawTextIncluded,
+    raw_conversation_included: false,
+    card_content_included: options.cardContentIncluded,
     created_at: new Date().toISOString(),
   };
 }
@@ -45,7 +47,8 @@ export function formatReceiptLine(receipt: TrustReceipt): string {
   return (
     `${receipt.created_at}  ${receipt.id}  target=${receipt.target}  scope=${receipt.scope}  ` +
     `cards=${receipt.cards_exported.length}  handoffs=${receipt.handoffs_exported.length}  ` +
-    `raw_text_included=${receipt.raw_text_included}`
+    `raw_conversation_included=${receipt.raw_conversation_included}  ` +
+    `card_content_included=${receipt.card_content_included}`
   );
 }
 
@@ -59,7 +62,8 @@ export function formatReceiptDetails(receipt: TrustReceipt): string {
     `Handoffs exported: ${
       receipt.handoffs_exported.length ? receipt.handoffs_exported.join(", ") : "none"
     }`,
-    `Raw text included: ${receipt.raw_text_included}`,
+    `Raw conversation included: ${receipt.raw_conversation_included}`,
+    `Card content included: ${receipt.card_content_included}`,
     "",
     "This receipt records one past export. It grants no future consent.",
     "",

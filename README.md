@@ -61,6 +61,11 @@ node dist/packages/cli/index.js card add boundary \
 node dist/packages/cli/index.js card add fossil \
   --label "Trace de passage"
 
+node dist/packages/cli/index.js card import \
+  --from markdown \
+  --file ./examples/notion-like/cards.md \
+  --dry-run
+
 node dist/packages/cli/index.js context build --scope minimal --target claude
 node dist/packages/cli/index.js context build --scope minimal --target chatgpt --format json
 
@@ -91,10 +96,10 @@ filesystem permissions (`0700` directories, `0600` files), records every
 context/handoff export, and exposes explicit local revocation commands.
 
 V1.1 adds field diagnostics, explicit Markdown/JSON exports, readable
-receipt detail, and receiving profiles for ChatGPT, Claude, Gemini, and
-generic assistants. A future local Markdown importer will accept
-Notion-like exports only through Doppelganger validation; its draft boundary
-is documented in `docs/markdown-card-import.md`.
+receipt detail, receiving profiles for ChatGPT, Claude, Gemini, and generic
+assistants, and a strict local Markdown importer. Notion-like exports enter
+only through Doppelganger validation; the boundary is documented in
+`docs/markdown-card-import.md`.
 
 V2 remains intentionally blocked until Quark exposes a dedicated continuity
 intake. See `docs/quark-intake-contract-v0.1.md`; Doppelganger will not map

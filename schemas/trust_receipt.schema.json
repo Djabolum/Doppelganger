@@ -4,7 +4,7 @@
   "title": "Trust Receipt",
   "description": "A record of one past export. Receipt != permanent consent.",
   "type": "object",
-  "required": ["id", "kind", "target", "scope", "cards_exported", "handoffs_exported", "raw_text_included", "created_at"],
+  "required": ["id", "kind", "target", "scope", "cards_exported", "handoffs_exported", "raw_conversation_included", "card_content_included", "created_at"],
   "additionalProperties": false,
   "properties": {
     "id": { "type": "string", "pattern": "^rcpt_[0-9a-f]+$" },
@@ -13,7 +13,8 @@
     "scope": { "enum": ["minimal", "project", "handoff", "deep", "fossil_only"] },
     "cards_exported": { "type": "array", "items": { "type": "string" } },
     "handoffs_exported": { "type": "array", "items": { "type": "string" } },
-    "raw_text_included": { "type": "boolean" },
+    "raw_conversation_included": { "const": false },
+    "card_content_included": { "type": "boolean" },
     "created_at": { "type": "string", "format": "date-time" }
   }
 }

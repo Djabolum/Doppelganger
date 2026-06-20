@@ -245,11 +245,24 @@ export function validateReceipt(value: unknown, where = "receipt"): TrustReceipt
       "scope",
       "cards_exported",
       "handoffs_exported",
+      "raw_conversation_included",
+      "card_content_included",
+      // Legacy V1 receipt field. Read and normalize; never write it again.
       "raw_text_included",
       "created_at",
     ],
     where
   );
+  if (
+    obj.raw_text_included !== undefined &&
+    (obj.raw_conversation_included !== undefined || obj.card_content_included !== undefined)
+  ) {
+    throw new Error(`${where}: legacy and current content disclosure fields cannot be mixed`);
+  }
+  const legacyRawText =
+    obj.raw_text_included === undefined
+      ? undefined
+      : requireBoolean(obj.raw_text_included, `${where}.raw_text_included`);
   const receipt: TrustReceipt = {
     id: requireString(obj.id, `${where}.id`),
     kind: requireEnum(obj.kind, ["trust_receipt"] as const, `${where}.kind`),
@@ -264,9 +277,21 @@ export function validateReceipt(value: unknown, where = "receipt"): TrustReceipt
       obj.handoffs_exported === undefined
         ? []
         : requireStringArray(obj.handoffs_exported, `${where}.handoffs_exported`),
-    raw_text_included: requireBoolean(obj.raw_text_included, `${where}.raw_text_included`),
+    raw_conversation_included:
+      legacyRawText === undefined
+        ? (requireBoolean(
+            obj.raw_conversation_included,
+            `${where}.raw_conversation_included`
+          ) as false)
+        : false,
+    card_content_included:
+      legacyRawText ??
+      requireBoolean(obj.card_content_included, `${where}.card_content_included`),
     created_at: requireIsoDate(obj.created_at, `${where}.created_at`),
   };
+  if (receipt.raw_conversation_included !== false) {
+    throw new Error(`${where}.raw_conversation_included must be false`);
+  }
   if (!/^rcpt_[0-9a-f]+$/.test(receipt.id)) throw new Error(`${where}.id: invalid receipt id`);
   return receipt;
 }

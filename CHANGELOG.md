@@ -2,6 +2,16 @@
 
 ## Unreleased — Roadmap clarification
 
+- implemented `doppel card import --from markdown --file <path>` with an
+  obligatory choice between validation-only `--dry-run` and explicit
+  persistence through `--confirm`
+- added the Notion-like import path as a ninth field case
+- strict Markdown front matter rejects unknown/duplicate fields, unsupported
+  card kinds, invalid values, executable HTML, and remote embedded images
+- replaced ambiguous `raw_text_included` in new exports and receipts with
+  `raw_conversation_included` plus `card_content_included`; legacy V1
+  receipts remain readable
+- bumped `context_pack` to schema `0.3` for the disclosure-field split
 - separated the product layers explicitly: writing surfaces write,
   Doppelganger validates and bounds, receiving hosts receive
 - defined V1.1 Markdown compatibility as a local import boundary, not an

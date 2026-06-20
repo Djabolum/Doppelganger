@@ -28,7 +28,8 @@ The route must be implemented explicitly on the Quark side. Until then,
     "memory_authority": false,
     "decision_authority": false,
     "activation_allowed": false,
-    "raw_text_included": false,
+    "raw_conversation_included": false,
+    "card_content_included": false,
     "revocable": true
   },
   "payload": {
@@ -47,7 +48,8 @@ The route must be implemented explicitly on the Quark side. Until then,
 ## Quark must reject
 
 - any authority flag set to `true`
-- `raw_text_included=true` without a distinct explicit consent proof
+- `raw_conversation_included=true` under all circumstances
+- `card_content_included=true` without a distinct explicit consent proof
 - an unknown `payload_kind`
 - a missing or unsupported `schema_version`
 - a missing bilateral receipt policy

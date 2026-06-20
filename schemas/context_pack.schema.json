@@ -7,7 +7,7 @@
   "required": ["schema_version", "kind", "scope", "target", "target_profile", "generated_at", "sections", "policy"],
   "additionalProperties": false,
   "properties": {
-    "schema_version": { "const": "0.2" },
+    "schema_version": { "const": "0.3" },
     "kind": { "const": "context_pack" },
     "scope": { "enum": ["minimal", "project", "deep", "fossil_only"] },
     "target": { "type": "string", "minLength": 1 },
@@ -35,13 +35,14 @@
     },
     "policy": {
       "type": "object",
-      "required": ["authority", "memory_write_allowed", "activation_allowed", "raw_text_included"],
+      "required": ["authority", "memory_write_allowed", "activation_allowed", "raw_conversation_included", "card_content_included"],
       "additionalProperties": false,
       "properties": {
         "authority": { "const": false },
         "memory_write_allowed": { "const": false },
         "activation_allowed": { "const": false },
-        "raw_text_included": { "type": "boolean" }
+        "raw_conversation_included": { "const": false },
+        "card_content_included": { "type": "boolean" }
       }
     }
   }

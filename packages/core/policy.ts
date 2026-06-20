@@ -83,7 +83,8 @@ export interface ExportPolicyLike {
   authority: boolean;
   memory_write_allowed: boolean;
   activation_allowed: boolean;
-  raw_text_included: boolean;
+  raw_conversation_included: false;
+  card_content_included: boolean;
 }
 
 /**
@@ -99,6 +100,11 @@ export function assertExportPolicy(policy: ExportPolicyLike, where = "export"): 
   if (policy.activation_allowed === true) {
     throw new PolicyViolationError(`${where}: activation_allowed must be false.`);
   }
+  if (policy.raw_conversation_included !== false) {
+    throw new PolicyViolationError(
+      `${where}: raw_conversation_included must be false. Doppelganger does not capture conversations.`
+    );
+  }
 }
 
 export interface ContinuityEnvelope {
@@ -106,19 +112,21 @@ export interface ContinuityEnvelope {
   memory_authority: boolean;
   decision_authority: boolean;
   activation_allowed: boolean;
-  raw_text_included: boolean;
+  raw_conversation_included: false;
+  card_content_included: boolean;
   revocable: boolean;
   source: "doppelganger";
 }
 
 /** Built once, used by every adapter that ever talks to an external host (Quark or otherwise). */
-export function buildContinuityEnvelope(rawTextIncluded: boolean): ContinuityEnvelope {
+export function buildContinuityEnvelope(cardContentIncluded: boolean): ContinuityEnvelope {
   return {
     authority: false,
     memory_authority: false,
     decision_authority: false,
     activation_allowed: false,
-    raw_text_included: rawTextIncluded,
+    raw_conversation_included: false,
+    card_content_included: cardContentIncluded,
     revocable: true,
     source: "doppelganger",
   };

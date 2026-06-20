@@ -69,7 +69,24 @@ doppel quark dry-run --type handoff --id <handoff_id>
 
 No network call is made.
 
-## 8. Audit and revoke
+## 8. Validate a Notion-like Markdown card
+
+```bash
+doppel card import \
+  --from markdown \
+  --file ./examples/notion-like/cards.md \
+  --dry-run
+
+doppel card import \
+  --from markdown \
+  --file ./examples/notion-like/cards.md \
+  --confirm
+```
+
+The first command validates without writing. The second creates a new
+canonical card; authored policy fields are never trusted.
+
+## 9. Audit and revoke
 
 ```bash
 doppel receipt list

@@ -1,6 +1,6 @@
 # Markdown Card Import — Draft Boundary
 
-Status: **design draft, not implemented**.
+Status: **implemented in V1.1**.
 
 Markdown import is a local writing convenience. It is not a Notion
 integration and does not make arbitrary document content a valid continuity
@@ -15,6 +15,12 @@ doppel card import --from markdown --file ./examples/notion-like/cards.md
 
 `--dry-run` must show the canonical cards that would be created and every
 validation error without writing to the vault.
+
+The command refuses to run without exactly one of `--dry-run` or `--confirm`.
+Dry-run validates and previews without requiring a vault write. Confirm
+passes the canonical card through the normal vault validation boundary.
+Because these are separate invocations, the preview ID and timestamps are
+provisional and are generated again on confirmation.
 
 `--from markdown` names the input parser explicitly. A future official
 Notion adapter must use its own source name and still pass through the same
