@@ -83,3 +83,18 @@ commands. Revocation removes the local artifact and appends a record to
 It does not pretend to recall copies already pasted into another assistant
 or exported to a file. A trust receipt tells the user where an earlier copy
 went; local revocation prevents future exports from this vault.
+
+## V2 transport invariant — no implicit capability
+
+External hosts receive only the capabilities explicitly granted by the
+approved transport contract. Anything not positively authorized is
+forbidden.
+
+> A deposit grants quarantine only. Any later read, promotion, indexing,
+> fossil derivation, or memory operation requires a new contract, a new
+> consent event, and a new receipt.
+
+Consent to deposit is not consent to read, promote, fossilize, index,
+automate, activate, profile, train on, or remember the projection. A future
+capability requires a new contract, a new consent event, and a new receipt;
+V2.0 consent cannot be reused.

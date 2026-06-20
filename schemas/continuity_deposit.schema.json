@@ -17,7 +17,7 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "schema_version": { "const": "0.2" },
+    "schema_version": { "const": "0.3" },
     "kind": { "const": "continuity_deposit" },
     "source": { "const": "doppelganger" },
     "payload_kind": { "enum": ["handoff_card", "fossil_trace"] },
@@ -77,13 +77,15 @@
       "required": [
         "local_receipt_required",
         "server_receipt_required",
-        "deletion_receipt_required"
+        "deletion_receipt_required",
+        "expiry_receipt_required"
       ],
       "additionalProperties": false,
       "properties": {
         "local_receipt_required": { "const": true },
         "server_receipt_required": { "const": true },
-        "deletion_receipt_required": { "const": true }
+        "deletion_receipt_required": { "const": true },
+        "expiry_receipt_required": { "const": true }
       }
     },
     "retention_requested_days": {

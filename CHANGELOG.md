@@ -7,6 +7,12 @@
 - added the Quark Gîte Intake Contract candidate `0.2`; it requires separate
   quarantine storage, scoped authentication, canonical hashing,
   idempotency, bilateral receipts, status inspection, and deletion receipts
+- superseded candidate `0.2` with `0.3`, adding a positive capability
+  allowlist, the canonical `no implicit capability` invariant, credential
+  lifecycle, projection-read prohibition, and a concrete 30-day backup
+  expiry ceiling for deletion and expiry receipts
+- made `a deposit grants quarantine only` the canonical V2 rule: every later
+  capability requires a new contract, consent event, and receipt
 - kept all V2 network implementation blocked until bilateral contract
   approval
 - normalized fixture line endings in tests so CRLF checkouts compare

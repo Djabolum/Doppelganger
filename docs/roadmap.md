@@ -78,7 +78,7 @@ Doppelganger vault
 ```
 
 The current specification candidate is in
-`docs/quark-intake-contract-v0.2.md`. No network implementation begins
+`docs/quark-intake-contract-v0.3.md`. No network implementation begins
 before this contract is approved bilaterally.
 
 ## V2.1 — Circulation hardening

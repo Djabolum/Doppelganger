@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "kind": "continuity_deposit",
   "source": "doppelganger",
   "payload_kind": "handoff_card",
@@ -47,7 +47,8 @@
   "receipt_policy": {
     "local_receipt_required": true,
     "server_receipt_required": true,
-    "deletion_receipt_required": true
+    "deletion_receipt_required": true,
+    "expiry_receipt_required": true
   },
   "retention_requested_days": 30
 }

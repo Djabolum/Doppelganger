@@ -100,7 +100,7 @@ only through Doppelganger validation; the boundary is documented in
 
 Next: Quark Intake contract. No implementation is authorized before the
 bilateral specification is approved. The current candidate is
-`docs/quark-intake-contract-v0.2.md`; Doppelganger will not map continuity
+`docs/quark-intake-contract-v0.3.md`; Doppelganger will not map continuity
 into an unrelated storage interface.
 
 The long-term layering is deliberate: writing surfaces write, Doppelganger

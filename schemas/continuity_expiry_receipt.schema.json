@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://doppelganger.local/schemas/continuity_deletion_receipt.schema.json",
-  "title": "Continuity Deletion Receipt",
+  "$id": "https://doppelganger.local/schemas/continuity_expiry_receipt.schema.json",
+  "title": "Continuity Expiry Receipt",
   "type": "object",
   "required": [
     "kind",
     "deposit_id",
     "state",
-    "content_deleted_at",
+    "content_expired_at",
     "content_hash",
     "projection_retained",
     "tombstone_retained",
@@ -16,10 +16,10 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "kind": { "const": "continuity_deletion_receipt" },
+    "kind": { "const": "continuity_expiry_receipt" },
     "deposit_id": { "type": "string", "pattern": "^qdep_[0-9a-f]+$" },
-    "state": { "const": "deleted" },
-    "content_deleted_at": { "type": "string", "format": "date-time" },
+    "state": { "const": "expired" },
+    "content_expired_at": { "type": "string", "format": "date-time" },
     "content_hash": {
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"

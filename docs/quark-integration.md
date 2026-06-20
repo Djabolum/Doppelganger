@@ -5,9 +5,10 @@ frozen; the V2 receiving contract is specified before any network code.
 See `docs/threat-model.md` for the local boundary.
 
 The active V2 candidate is
-`docs/quark-intake-contract-v0.2.md`. It requires a dedicated continuity
+`docs/quark-intake-contract-v0.3.md`. It requires a dedicated continuity
 quarantine, scoped authentication, idempotency, status, bilateral receipts,
-and deletion receipts; it is not a wrapper around `/fossils`.
+deletion/expiry receipts, and a deny-by-default capability model; it is not
+a wrapper around `/fossils`.
 
 ## What exists today (V1 MVP)
 

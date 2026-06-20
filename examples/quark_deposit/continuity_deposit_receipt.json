@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "kind": "continuity_deposit_receipt",
   "quark_deposit_id": "qdep_45a19c2e",
   "state": "quarantined",

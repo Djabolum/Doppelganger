@@ -17,5 +17,5 @@ fossil/memory-card/handoff-card/receipt into one bucket, which the doctrine
 (`docs/quark-integration.md`) explicitly forbids. Building this adapter for
 real is a bilateral contract effort.
 
-See `docs/quark-intake-contract-v0.2.md` for the bilateral contract
+See `docs/quark-intake-contract-v0.3.md` for the bilateral contract
 candidate. No executable adapter is authorized before approval.

@@ -1,11 +1,11 @@
 {
-  "kind": "continuity_deletion_receipt",
+  "kind": "continuity_expiry_receipt",
   "deposit_id": "qdep_45a19c2e",
-  "state": "deleted",
-  "content_deleted_at": "2026-06-20T00:10:00.000Z",
+  "state": "expired",
+  "content_expired_at": "2026-07-20T00:00:01.000Z",
   "content_hash": "sha256:299405503880d924e81fafbf0b0afa3aa72cd75de5b16e87d2dcedd5d99b76d0",
   "projection_retained": false,
   "tombstone_retained": true,
   "backup_projection_max_retention_days": 30,
-  "backup_projection_expires_no_later_than": "2026-07-20T00:10:00.000Z"
+  "backup_projection_expires_no_later_than": "2026-08-19T00:00:01.000Z"
 }

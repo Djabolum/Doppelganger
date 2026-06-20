@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/continuity_status.schema.json",
+  "title": "Continuity Deposit Status",
+  "description": "Metadata-only status. Projection content is forbidden in V2.0.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "deposit_id",
+    "state",
+    "content_hash",
+    "policy_hash",
+    "retention",
+    "receipt_ids"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.3" },
+    "kind": { "const": "continuity_deposit_status" },
+    "deposit_id": { "type": "string", "pattern": "^qdep_[0-9a-f]+$" },
+    "state": {
+      "enum": ["quarantined", "deletion_pending", "deleted", "expired"]
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "policy_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "retention": {
+      "type": "object",
+      "required": ["mode", "expires_at"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "const": "bounded" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "receipt_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^qrcpt_[0-9a-f]+$" }
+    }
+  }
+}
