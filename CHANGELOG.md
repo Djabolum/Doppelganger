@@ -10,6 +10,10 @@
   V3, after the local object model and Quark transport contract are stable
 - added a draft Markdown card format in which user-authored content is
   validated before canonical IDs, policy fields, and timestamps are created
+- made the future import source and file explicit with
+  `card import --from markdown --file <path> --dry-run`
+- documented that the CLI alias `fossil` maps to `fossil_trace`, never
+  `fossil_card`, and that fossil traces reject narrative `content`
 
 ## 2026-06-19 — V1.1 Field hardening
 

@@ -7,7 +7,7 @@
 | **Memory card** | A stated preference or fact, e.g. "the user prefers layered responses." Not verified, not truth. |
 | **Boundary card** | A stated limit on how an assistant should behave toward the user, e.g. "do not diagnose me." |
 | **Project card** | A fact about a specific project: name, objective, active decisions. |
-| **Fossil trace** | A structured behavioral signal, never raw conversation text. The only card kind allowed under the `fossil_only` scope. |
+| **Fossil trace** | A structured behavioral signal, never raw conversation text. The CLI alias `fossil` maps to the internal kind `fossil_trace`; `fossil_card` does not exist. The only card kind allowed under the `fossil_only` scope. |
 | **Handoff card** | A richer, separate object (`packages/core/handoff.ts`) carrying decisions, open questions, and boundaries from one conversation, meant to be picked up — never obeyed — by another assistant. |
 | **Context pack** | The scoped export built from cards for a target (`packages/core/context_pack.ts`, schema `0.2`). Available as Markdown or JSON. Not identity. |
 | **Target profile** | Bounded receiving metadata for ChatGPT, Claude, Gemini, or a generic assistant. It changes presentation only and cannot change scope, policy, or authority. |

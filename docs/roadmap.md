@@ -40,8 +40,8 @@ Next bounded addition:
 The intended flow is:
 
 ```text
-cards/*.md
-  -> doppel card import --dry-run
+Notion-like Markdown file
+  -> doppel card import --from markdown --file <path> --dry-run
   -> Doppelganger validation and policy
   -> canonical local card
 ```
