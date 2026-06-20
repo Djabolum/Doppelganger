@@ -39,6 +39,15 @@ The local skeleton proves receiver behavior only. It does not authorize
 transport. Quark Intake local skeleton exists; network deposit remains
 unauthorized.
 
+## Candidate 0.3 compatibility
+
+Doppelganger's candidate 0.3 example payload is accepted unchanged by the
+Quark local validator. Both sides compute the same canonical content hash
+and artifact size.
+
+This is a local contract compatibility proof only. The network adapter
+remains unauthorized.
+
 ## What exists today (V1 MVP)
 
 `doppel quark dry-run --type <kind> --id <id>` (see
