@@ -2,6 +2,8 @@
 
 ## Unreleased — Roadmap clarification
 
+- added a deterministic, network-disabled candidate 0.3 fixture exporter
+  with an integrity manifest for bilateral local contract tests
 - froze V1.1 as the local-first continuity kit with validated
   Markdown/Notion-like import
 - added the Quark Gîte Intake Contract candidate `0.2`; it requires separate

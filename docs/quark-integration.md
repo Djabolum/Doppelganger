@@ -48,6 +48,17 @@ and artifact size.
 This is a local contract compatibility proof only. The network adapter
 remains unauthorized.
 
+The stable fixture bundle can be exported explicitly for local bilateral
+contract tests:
+
+```bash
+npm run export:quark-contract-fixture -- --output <directory>
+```
+
+The exporter writes a deterministic candidate 0.3 payload plus an integrity
+manifest. It does not contact Quark and is not a `doppel quark deposit`
+implementation.
+
 ## What exists today (V1 MVP)
 
 `doppel quark dry-run --type <kind> --id <id>` (see
