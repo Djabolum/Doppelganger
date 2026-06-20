@@ -2,6 +2,8 @@
 
 ## Unreleased — Roadmap clarification
 
+- added a cross-repository contract lock that rejects unversioned fixture,
+  hash, size, or expected-receipt drift before export
 - added a deterministic, network-disabled candidate 0.3 fixture exporter
   with an integrity manifest for bilateral local contract tests
 - froze V1.1 as the local-first continuity kit with validated
