@@ -2,6 +2,10 @@
 
 ## Unreleased — Roadmap clarification
 
+- normalized fixture line endings in tests so CRLF checkouts compare
+  identically with LF CLI output
+- boundary rendering now preserves the user's authored language and wording,
+  adding only missing terminal punctuation instead of injecting `Do not`
 - made `npm test` portable to Windows by replacing shell glob expansion with
   Node's directory-based test discovery, guarded by a regression test
 - implemented `doppel card import --from markdown --file <path>` with an

@@ -34,6 +34,10 @@ function firstJson(dir) {
   return path.join(dir, fs.readdirSync(dir).find((name) => name.endsWith(".json")));
 }
 
+function normalizeEol(value) {
+  return String(value).replace(/\r\n/g, "\n");
+}
+
 test("vault rejects a tampered card instead of masking authority", (t) => {
   const cwd = workspace(t);
   init(cwd);
@@ -341,14 +345,39 @@ test("README quickstart output stays aligned with the checked-in fixture", (t) =
     "--label",
     "No diagnosis",
     "--content",
-    "turn my traces or emotions into a diagnosis",
+    "Do not turn my traces or emotions into a diagnosis.",
   ]);
   const result = run(cwd, ["context", "build", "--scope", "minimal", "--target", "claude"]);
   const fixture = fs.readFileSync(
     path.resolve(__dirname, "../examples/minimal/context_pack.md"),
     "utf8"
   );
-  assert.equal(result.stdout, fixture);
+  assert.equal(normalizeEol(result.stdout), normalizeEol(fixture));
+});
+
+test("boundary rendering preserves authored language and avoids double punctuation", (t) => {
+  const cwd = workspace(t);
+  init(cwd);
+  run(cwd, [
+    "card",
+    "add",
+    "boundary",
+    "--label",
+    "Pas de diagnostic",
+    "--content",
+    "Ne pas transformer mes traces ou émotions en diagnostic.",
+  ]);
+  const result = run(cwd, [
+    "context",
+    "build",
+    "--scope",
+    "minimal",
+    "--target",
+    "chatgpt",
+  ]);
+  assert.match(result.stdout, /- Ne pas transformer mes traces ou émotions en diagnostic\./);
+  assert.doesNotMatch(result.stdout, /Do not Ne pas/);
+  assert.doesNotMatch(result.stdout, /diagnostic\.\./);
 });
 
 test("doctor reports a healthy local-only vault without making network claims", (t) => {
@@ -440,6 +469,14 @@ test("target profiles are bounded presentation templates", () => {
     assert.doesNotMatch(profile.handling_note, /authority:\s*true/i);
     assert.match(profile.handling_note, /context|reference/i);
   }
+});
+
+test("boundary text normalization only adds missing terminal punctuation", () => {
+  const { normalizeBoundaryText } = require("../dist/packages/core/context_pack.js");
+  assert.equal(normalizeBoundaryText("Ne pas diagnostiquer"), "Ne pas diagnostiquer.");
+  assert.equal(normalizeBoundaryText("Ne pas diagnostiquer."), "Ne pas diagnostiquer.");
+  assert.equal(normalizeBoundaryText("Is this allowed?"), "Is this allowed?");
+  assert.equal(normalizeBoundaryText("Stop!"), "Stop!");
 });
 
 test("invalid formats and trailing command arguments fail clearly", (t) => {

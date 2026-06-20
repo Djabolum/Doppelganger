@@ -33,6 +33,12 @@ export interface BuildContextPackOptions {
   target: string;
 }
 
+export function normalizeBoundaryText(value: string): string {
+  const text = value.trim();
+  if (!text) return "";
+  return /[.!?]$/.test(text) ? text : `${text}.`;
+}
+
 export function buildContextPack(options: BuildContextPackOptions): ContextPack {
   if (options.scope === "handoff") {
     throw new Error(
@@ -108,7 +114,7 @@ export function renderContextPackMarkdown(pack: ContextPack): string {
     lines.push("_None._");
   } else {
     for (const c of pack.sections.boundaries) {
-      lines.push(`- Do not ${c.content ?? c.label}.`);
+      lines.push(`- ${normalizeBoundaryText(c.content ?? c.label)}`);
     }
   }
   lines.push("");

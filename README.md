@@ -54,7 +54,7 @@ node dist/packages/cli/index.js card add memory \
 
 node dist/packages/cli/index.js card add boundary \
   --label "No diagnosis" \
-  --content "turn my traces or emotions into a diagnosis"
+  --content "Do not turn my traces or emotions into a diagnosis."
 
 # `fossil` is the short CLI alias for the internal kind `fossil_trace`.
 # Fossil traces carry a short pattern label, never narrative `--content`.
