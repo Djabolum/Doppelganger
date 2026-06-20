@@ -56,8 +56,11 @@ npm run export:quark-contract-fixture -- --output <directory>
 ```
 
 The exporter writes a deterministic candidate 0.3 payload plus an integrity
-manifest. It does not contact Quark and is not a `doppel quark deposit`
-implementation.
+manifest and a shared contract lock. Any payload or receipt-shape change
+that does not explicitly update the versioned lock is rejected as contract
+drift before files are written.
+
+It does not contact Quark and is not a `doppel quark deposit` implementation.
 
 ## What exists today (V1 MVP)
 

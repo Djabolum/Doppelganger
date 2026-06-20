@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.1",
+  "kind": "cross_repo_contract_lock",
+  "contract_name": "doppelganger-quark-continuity",
+  "fixture_version": "candidate-0.3-v0",
+  "contract_id": "sha256:6f1418e508abbd4e4d4329ef20a6ba6bc972dc0dbca132b299136106291545d9",
+  "network_authorized": false
+}
