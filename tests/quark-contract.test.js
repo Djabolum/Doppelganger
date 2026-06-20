@@ -41,6 +41,7 @@ test("Quark intake candidate accepts only bounded payload kinds", () => {
   assert.deepEqual(schema.properties.payload_kind.enum, ["handoff_card", "fossil_trace"]);
   assert.equal(schema.properties.retention_requested_days.minimum, 1);
   assert.equal(schema.properties.retention_requested_days.maximum, 30);
+  assert.equal(schema.properties.projection.properties.artifact_size_bytes.maximum, 16384);
 
   const policy = schema.properties.policy.properties;
   for (const field of [
@@ -55,6 +56,8 @@ test("Quark intake candidate accepts only bounded payload kinds", () => {
     assert.equal(policy[field].const, false, `${field} must remain false`);
   }
   assert.equal(policy.revocable.const, true);
+  assert.equal(policy.user_approved_projection_included.const, true);
+  assert.equal(Object.hasOwn(policy, "authored_projection_included"), false);
 });
 
 test("Quark intake 0.3 is deny-by-default with scoped credential lifecycle", () => {
@@ -86,6 +89,8 @@ test("Quark intake 0.3 is deny-by-default with scoped credential lifecycle", () 
   }
   assert.match(contract, /V2\.0 consent must not be reused as read consent/);
   assert.match(contract, /projection_read_not_supported/);
+  assert.match(contract, /16 KiB \(16,384 bytes\)/);
+  assert.match(contract, /Backup encryption keys must not be accessible to application request\s+handlers/);
   assert.match(contract, /backup copies containing projection content must expire no later\s+than 30 days/i);
 
   const gitignore = fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8");
@@ -100,6 +105,11 @@ test("Quark contract examples preserve hash and non-capture invariants", () => {
   const expiry = readJson("examples/quark_deposit/continuity_expiry_receipt.json");
 
   assert.equal(sha256(deposit.projection.artifact), deposit.projection.content_hash);
+  assert.equal(
+    Buffer.byteLength(canonicalJson(deposit.projection.artifact), "utf8"),
+    deposit.projection.artifact_size_bytes
+  );
+  assert.ok(deposit.projection.artifact_size_bytes <= 16384);
   assert.equal(deposit.consent.projection_hash, deposit.projection.content_hash);
   assert.equal(sha256(deposit.policy), receipt.server_receipt.policy_hash);
   assert.equal(receipt.server_receipt.content_hash, deposit.projection.content_hash);
@@ -108,6 +118,8 @@ test("Quark contract examples preserve hash and non-capture invariants", () => {
   assert.equal(expiry.content_hash, deposit.projection.content_hash);
 
   assert.equal(deposit.schema_version, "0.3");
+  assert.equal(deposit.policy.user_approved_projection_included, true);
+  assert.equal(Object.hasOwn(deposit.policy, "authored_projection_included"), false);
   assert.equal(receipt.state, "quarantined");
   assert.equal(receipt.server_receipt.fossil_created, false);
   assert.equal(receipt.server_receipt.activated, false);

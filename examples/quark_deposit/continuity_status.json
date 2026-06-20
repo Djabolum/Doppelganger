@@ -4,7 +4,7 @@
   "deposit_id": "qdep_45a19c2e",
   "state": "quarantined",
   "content_hash": "sha256:299405503880d924e81fafbf0b0afa3aa72cd75de5b16e87d2dcedd5d99b76d0",
-  "policy_hash": "sha256:383cb1783073c7631c32b5f9cb829e4c0293e8ba36c62d412f3dc9e1e21efa51",
+  "policy_hash": "sha256:61f9475bc6955a77584afd02474cb1ec5b7867ab79cfa2e30caf46db7a90cb53",
   "retention": {
     "mode": "bounded",
     "expires_at": "2026-07-20T00:00:01.000Z"

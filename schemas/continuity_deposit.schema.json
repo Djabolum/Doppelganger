@@ -23,13 +23,18 @@
     "payload_kind": { "enum": ["handoff_card", "fossil_trace"] },
     "projection": {
       "type": "object",
-      "required": ["artifact", "content_hash"],
+      "required": ["artifact", "content_hash", "artifact_size_bytes"],
       "additionalProperties": false,
       "properties": {
         "artifact": { "type": "object" },
         "content_hash": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "artifact_size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16384
         }
       }
     },
@@ -41,7 +46,7 @@
         "decision_authority",
         "activation_allowed",
         "raw_conversation_included",
-        "authored_projection_included",
+        "user_approved_projection_included",
         "revocable",
         "fossil_derivation_allowed",
         "semantic_indexing_allowed"
@@ -53,7 +58,7 @@
         "decision_authority": { "const": false },
         "activation_allowed": { "const": false },
         "raw_conversation_included": { "const": false },
-        "authored_projection_included": { "type": "boolean" },
+        "user_approved_projection_included": { "const": true },
         "revocable": { "const": true },
         "fossil_derivation_allowed": { "const": false },
         "semantic_indexing_allowed": { "const": false }

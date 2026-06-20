@@ -26,7 +26,8 @@
       "usable_as": "context_only",
       "created_at": "2026-06-20T00:00:00.000Z"
     },
-    "content_hash": "sha256:299405503880d924e81fafbf0b0afa3aa72cd75de5b16e87d2dcedd5d99b76d0"
+    "content_hash": "sha256:299405503880d924e81fafbf0b0afa3aa72cd75de5b16e87d2dcedd5d99b76d0",
+    "artifact_size_bytes": 408
   },
   "policy": {
     "authority": false,
@@ -34,7 +35,7 @@
     "decision_authority": false,
     "activation_allowed": false,
     "raw_conversation_included": false,
-    "authored_projection_included": true,
+    "user_approved_projection_included": true,
     "revocable": true,
     "fossil_derivation_allowed": false,
     "semantic_indexing_allowed": false

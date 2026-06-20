@@ -155,7 +155,8 @@ POST /api/quark/intake/continuity
       "usable_as": "context_only",
       "created_at": "2026-06-20T00:00:00Z"
     },
-    "content_hash": "sha256:<canonical-json-hash>"
+    "content_hash": "sha256:<canonical-json-hash>",
+    "artifact_size_bytes": 408
   },
   "policy": {
     "authority": false,
@@ -163,7 +164,7 @@ POST /api/quark/intake/continuity
     "decision_authority": false,
     "activation_allowed": false,
     "raw_conversation_included": false,
-    "authored_projection_included": true,
+    "user_approved_projection_included": true,
     "revocable": true,
     "fossil_derivation_allowed": false,
     "semantic_indexing_allowed": false
@@ -188,6 +189,16 @@ The hash is computed over the UTF-8 bytes of canonical JSON for
 remain in authored order and values are not rewritten after confirmation.
 `policy_hash` uses the same process over the accepted `policy` object.
 
+`artifact_size_bytes` is the byte length of that same canonical UTF-8
+representation. V2.0 accepts at most **16 KiB (16,384 bytes)** per projection
+artifact. The receiver must recompute the size and reject a mismatched
+declaration or an oversized artifact before persistence.
+
+`user_approved_projection_included` means the deposit contains a bounded
+projection explicitly approved by the user. It does not mean raw
+conversation content, memory authority, or permission to read the projection
+later.
+
 ## Mandatory rejection
 
 Quark must reject:
@@ -199,7 +210,8 @@ Quark must reject:
 - a projection hash mismatch
 - an unsupported schema or payload kind
 - unknown fields
-- an artifact exceeding the published byte limit
+- a declared artifact size that does not match the canonical UTF-8 bytes
+- an artifact exceeding 16 KiB (16,384 bytes)
 - a retention request outside the range `1..30` days
 - a handoff whose `usable_as` is not `context_only`
 - a fossil trace carrying narrative content
@@ -310,6 +322,11 @@ Quark must not claim complete erasure before that deadline has passed.
 quarantine storage; backup residuals are disclosed separately by the two
 backup fields.
 
+Backup encryption keys must not be accessible to application request
+handlers. Backup decryption is restricted to the separately controlled
+disaster-recovery process and must not create an application-level projection
+read capability.
+
 An expired deposit follows the same active-content removal guarantees as a
 deleted deposit and produces a `continuity_expiry_receipt`. V2.0 does not
 support indefinite retention or silent renewal.
@@ -358,13 +375,14 @@ Before network code is enabled, tests must prove:
 3. Cross-user reads and deletes are denied.
 4. Duplicate requests are idempotent.
 5. Hash, schema, policy, consent, and unknown-field failures are fail-closed.
+   Canonical artifact size is recomputed and limited to 16 KiB.
 6. Deletion removes projection content and emits a deletion receipt.
 7. Expiry removes projection content and emits an expiry receipt.
 8. Status responses cannot contain projection content.
 9. Credential TTL, scope, revocation, rotation, and secret storage are
    enforced.
 10. Backup projection content expires within 30 days after deletion or
-    expiry.
+    expiry, and backup encryption keys are inaccessible to request handlers.
 11. Doppelganger writes a local receipt only after matching the server
     receipt.
 12. Network failure produces an incomplete state, never a false success.

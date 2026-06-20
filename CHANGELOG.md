@@ -13,6 +13,10 @@
   expiry ceiling for deletion and expiry receipts
 - made `a deposit grants quarantine only` the canonical V2 rule: every later
   capability requires a new contract, consent event, and receipt
+- renamed the projection disclosure flag to
+  `user_approved_projection_included`, capped canonical projection artifacts
+  at 16 KiB, and isolated backup encryption keys from application request
+  handlers
 - kept all V2 network implementation blocked until bilateral contract
   approval
 - normalized fixture line endings in tests so CRLF checkouts compare
