@@ -2,6 +2,13 @@
 
 ## Unreleased — Roadmap clarification
 
+- froze V1.1 as the local-first continuity kit with validated
+  Markdown/Notion-like import
+- added the Quark Gîte Intake Contract candidate `0.2`; it requires separate
+  quarantine storage, scoped authentication, canonical hashing,
+  idempotency, bilateral receipts, status inspection, and deletion receipts
+- kept all V2 network implementation blocked until bilateral contract
+  approval
 - normalized fixture line endings in tests so CRLF checkouts compare
   identically with LF CLI output
 - boundary rendering now preserves the user's authored language and wording,

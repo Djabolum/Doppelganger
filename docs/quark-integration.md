@@ -1,12 +1,13 @@
 # Quark-AI Integration
 
-Quark-AI is optional. Doppelganger works fully offline without it — see
-`docs/threat-model.md`. This document describes what *would* connect them,
-what already exists today, and what is deliberately not built yet.
+Quark-AI is optional. Doppelganger works fully offline without it. V1.1 is
+frozen; the V2 receiving contract is specified before any network code.
+See `docs/threat-model.md` for the local boundary.
 
-The minimal V2 contract is drafted in
-`docs/quark-intake-contract-v0.1.md`. It requires a dedicated continuity
-quarantine and bilateral receipts; it is not a wrapper around `/fossils`.
+The active V2 candidate is
+`docs/quark-intake-contract-v0.2.md`. It requires a dedicated continuity
+quarantine, scoped authentication, idempotency, status, bilateral receipts,
+and deletion receipts; it is not a wrapper around `/fossils`.
 
 ## What exists today (V1 MVP)
 
@@ -52,7 +53,11 @@ Doppelganger pairs with its local receipt.
 
 This endpoint does not exist on the Quark-AI side yet. Building it is a
 bilateral Quark/Doppelganger effort — `packages/adapters/quark/` stays a
-placeholder until that contract is implemented and tested on both sides.
+placeholder until that contract is approved, then implemented and tested on
+both sides.
+
+The receiving resource must use a namespace separate from fossils, memories,
+projects, automation, semantic indexing, and activation.
 
 ## No storage compatibility shortcut
 

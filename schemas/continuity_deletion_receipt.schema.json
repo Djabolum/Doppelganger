@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/continuity_deletion_receipt.schema.json",
+  "title": "Continuity Deletion Receipt",
+  "type": "object",
+  "required": [
+    "kind",
+    "deposit_id",
+    "state",
+    "content_deleted_at",
+    "content_hash",
+    "projection_retained",
+    "tombstone_retained"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "kind": { "const": "continuity_deletion_receipt" },
+    "deposit_id": { "type": "string", "pattern": "^qdep_[0-9a-f]+$" },
+    "state": { "const": "deleted" },
+    "content_deleted_at": { "type": "string", "format": "date-time" },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "projection_retained": { "const": false },
+    "tombstone_retained": { "const": true }
+  }
+}

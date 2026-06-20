@@ -1,0 +1,53 @@
+{
+  "schema_version": "0.2",
+  "kind": "continuity_deposit",
+  "source": "doppelganger",
+  "payload_kind": "handoff_card",
+  "projection": {
+    "artifact": {
+      "id": "hnd_7c2e9f015a3b",
+      "schema_version": "0.1",
+      "kind": "handoff_card",
+      "topic": "Bounded transfer",
+      "from_surface": "chatgpt",
+      "target_surface": "quark",
+      "status": "open",
+      "decisions": [
+        {
+          "text": "Preserve the non-capture boundary.",
+          "confidence": "high",
+          "authority": false
+        }
+      ],
+      "open_questions": [],
+      "boundaries": [
+        "Do not activate or fossilize this handoff."
+      ],
+      "usable_as": "context_only",
+      "created_at": "2026-06-20T00:00:00.000Z"
+    },
+    "content_hash": "sha256:299405503880d924e81fafbf0b0afa3aa72cd75de5b16e87d2dcedd5d99b76d0"
+  },
+  "policy": {
+    "authority": false,
+    "memory_authority": false,
+    "decision_authority": false,
+    "activation_allowed": false,
+    "raw_conversation_included": false,
+    "authored_projection_included": true,
+    "revocable": true,
+    "fossil_derivation_allowed": false,
+    "semantic_indexing_allowed": false
+  },
+  "consent": {
+    "mode": "explicit_cli_confirm",
+    "confirmed_at": "2026-06-20T00:00:00.000Z",
+    "projection_hash": "sha256:299405503880d924e81fafbf0b0afa3aa72cd75de5b16e87d2dcedd5d99b76d0"
+  },
+  "receipt_policy": {
+    "local_receipt_required": true,
+    "server_receipt_required": true,
+    "deletion_receipt_required": true
+  },
+  "retention_requested_days": 30
+}

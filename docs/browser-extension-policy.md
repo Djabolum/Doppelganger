@@ -1,6 +1,6 @@
 # Browser Extension Policy
 
-Deferred to V1.1 (`packages/browser-extension/README.md`). This policy is
+Deferred to V3 (`packages/browser-extension/README.md`). This policy is
 written now, before any code, so the constraint exists before the
 temptation does.
 

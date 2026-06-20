@@ -80,16 +80,13 @@ Once installed globally (or linked), the same commands run as `doppel init`,
 `doppel card add ...`, `doppel context build ...`.
 
 See `examples/minimal/` for the manifest, cards, and context pack this
-produces, `docs/field-cases.md` for eight realistic usage paths, and
+produces, `docs/field-cases.md` for realistic usage paths, and
 `docs/scopes.md` for what each scope includes.
 
-## Status
+## Status — V1.1 frozen
 
-V1 MVP: `packages/core`, `packages/cli`, the V0 `schemas/`, `examples/`,
-and `docs/`. Deferred and explicitly tracked (not silently dropped):
-`packages/browser-extension/`, `packages/adapters/mcp/`, a real
-`packages/adapters/quark/` deposit, vault encryption, and the cross-AI
-observatory. See `CHANGELOG.md` for the full breakdown.
+**Doppelganger V1.1 is frozen as a local-first continuity kit with validated
+Markdown/Notion-like import.** See `docs/v1.1-freeze.md`.
 
 The vault validates every object again when it is read, uses private
 filesystem permissions (`0700` directories, `0600` files), records every
@@ -101,9 +98,10 @@ assistants, and a strict local Markdown importer. Notion-like exports enter
 only through Doppelganger validation; the boundary is documented in
 `docs/markdown-card-import.md`.
 
-V2 remains intentionally blocked until Quark exposes a dedicated continuity
-intake. See `docs/quark-intake-contract-v0.1.md`; Doppelganger will not map
-continuity into an unrelated storage interface.
+Next: Quark Intake contract. No implementation is authorized before the
+bilateral specification is approved. The current candidate is
+`docs/quark-intake-contract-v0.2.md`; Doppelganger will not map continuity
+into an unrelated storage interface.
 
 The long-term layering is deliberate: writing surfaces write, Doppelganger
 bounds, and receiving hosts receive. Official Notion, browser, and MCP

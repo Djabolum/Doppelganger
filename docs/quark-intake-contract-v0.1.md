@@ -1,6 +1,7 @@
 # Quark Intake Contract — Draft 0.1
 
-Status: **architectural draft, not implemented**.
+Status: **superseded by
+`docs/quark-intake-contract-v0.2.md`; never implemented**.
 
 This document defines the smallest acceptable contract for V2. It does not
 authorize Doppelganger to reuse an existing fossil or generic storage

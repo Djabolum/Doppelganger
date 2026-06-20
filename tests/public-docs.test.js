@@ -11,6 +11,7 @@ const PUBLIC_ROOTS = [
   "CHANGELOG.md",
   "docs",
   "examples",
+  "schemas",
   "packages/adapters",
   "packages/browser-extension",
 ];

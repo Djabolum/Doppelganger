@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/continuity_deposit_receipt.schema.json",
+  "title": "Continuity Deposit Receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "quark_deposit_id",
+    "state",
+    "stored_as",
+    "server_receipt",
+    "retention"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.2" },
+    "kind": { "const": "continuity_deposit_receipt" },
+    "quark_deposit_id": {
+      "type": "string",
+      "pattern": "^qdep_[0-9a-f]+$"
+    },
+    "state": { "const": "quarantined" },
+    "stored_as": { "const": "continuity_quarantine" },
+    "server_receipt": {
+      "type": "object",
+      "required": [
+        "id",
+        "received_at",
+        "content_hash",
+        "policy_hash",
+        "payload_kind",
+        "fossil_created",
+        "activated",
+        "indexed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^qrcpt_[0-9a-f]+$" },
+        "received_at": { "type": "string", "format": "date-time" },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "policy_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "payload_kind": { "enum": ["handoff_card", "fossil_trace"] },
+        "fossil_created": { "const": false },
+        "activated": { "const": false },
+        "indexed": { "const": false }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "required": ["mode", "expires_at"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "const": "bounded" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/continuity_deposit.schema.json",
+  "title": "Continuity Deposit",
+  "description": "A bounded, non-authoritative projection offered to a receiving host.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "source",
+    "payload_kind",
+    "projection",
+    "policy",
+    "consent",
+    "receipt_policy",
+    "retention_requested_days"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.2" },
+    "kind": { "const": "continuity_deposit" },
+    "source": { "const": "doppelganger" },
+    "payload_kind": { "enum": ["handoff_card", "fossil_trace"] },
+    "projection": {
+      "type": "object",
+      "required": ["artifact", "content_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "artifact": { "type": "object" },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "authority",
+        "memory_authority",
+        "decision_authority",
+        "activation_allowed",
+        "raw_conversation_included",
+        "authored_projection_included",
+        "revocable",
+        "fossil_derivation_allowed",
+        "semantic_indexing_allowed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "authority": { "const": false },
+        "memory_authority": { "const": false },
+        "decision_authority": { "const": false },
+        "activation_allowed": { "const": false },
+        "raw_conversation_included": { "const": false },
+        "authored_projection_included": { "type": "boolean" },
+        "revocable": { "const": true },
+        "fossil_derivation_allowed": { "const": false },
+        "semantic_indexing_allowed": { "const": false }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "required": ["mode", "confirmed_at", "projection_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "const": "explicit_cli_confirm" },
+        "confirmed_at": { "type": "string", "format": "date-time" },
+        "projection_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "receipt_policy": {
+      "type": "object",
+      "required": [
+        "local_receipt_required",
+        "server_receipt_required",
+        "deletion_receipt_required"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "local_receipt_required": { "const": true },
+        "server_receipt_required": { "const": true },
+        "deletion_receipt_required": { "const": true }
+      }
+    },
+    "retention_requested_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "payload_kind": { "const": "handoff_card" } },
+        "required": ["payload_kind"]
+      },
+      "then": {
+        "properties": {
+          "projection": {
+            "properties": {
+              "artifact": { "$ref": "handoff_card.schema.json" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "payload_kind": { "const": "fossil_trace" } },
+        "required": ["payload_kind"]
+      },
+      "then": {
+        "properties": {
+          "projection": {
+            "properties": {
+              "artifact": {
+                "allOf": [
+                  { "$ref": "card.schema.json" },
+                  {
+                    "type": "object",
+                    "properties": { "kind": { "const": "fossil_trace" } },
+                    "required": ["kind"]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

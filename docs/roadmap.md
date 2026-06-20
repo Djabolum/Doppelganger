@@ -17,6 +17,8 @@ Delivered:
 
 ## V1.1 — Writing usability and Markdown compatibility
 
+Status: **frozen on 2026-06-20**. See `docs/v1.1-freeze.md`.
+
 Goal: make the local product comfortable to use without turning a writing
 surface into an authority source.
 
@@ -75,7 +77,9 @@ Doppelganger vault
   -> optional, separately approved fossil derivation
 ```
 
-The draft contract is in `docs/quark-intake-contract-v0.1.md`.
+The current specification candidate is in
+`docs/quark-intake-contract-v0.2.md`. No network implementation begins
+before this contract is approved bilaterally.
 
 ## V2.1 — Circulation hardening
 
