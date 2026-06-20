@@ -2,6 +2,8 @@
 
 ## Unreleased — Roadmap clarification
 
+- made `npm test` portable to Windows by replacing shell glob expansion with
+  Node's directory-based test discovery, guarded by a regression test
 - implemented `doppel card import --from markdown --file <path>` with an
   obligatory choice between validation-only `--dry-run` and explicit
   persistence through `--confirm`
