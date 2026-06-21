@@ -1,7 +1,9 @@
 # Changelog
 
-## 0.1.1 — 2026-06-21 — V1.1 Frozen local-first toolkit
+## 0.1.2 — 2026-06-21 — V1.1 Frozen local-first toolkit
 
+- skipped npm version `0.1.1` before registry publication so the first
+  public package preserves the installed `doppel` CLI binary correctly
 - prepared the first installable public CLI package under
   `@djabolum/doppelganger`; the unscoped npm name belongs to an unrelated
   project
