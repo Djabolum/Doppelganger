@@ -17,6 +17,8 @@
  *   doppel handoff revoke --id <id> [--reason <text>]
  *   doppel receipt list
  *   doppel receipt show --id <id>
+ *   doppel contract build-quark-candidate --type <handoff|fossil> --id <id>
+ *                                           --out <file> --confirm
  *   doppel quark dry-run --type <kind> --id <id>
  *   doppel quark deposit ...   -> explicitly not implemented in V1 (see docs/quark-integration.md)
  *   doppel status
@@ -37,6 +39,14 @@ import { buildContinuityEnvelope, assertContinuityEnvelope } from "../core/polic
 import { exportMarkdown, exportJson, copyToClipboard } from "../adapters/file-export";
 import { renderDoctorReport, runDoctor } from "../core/doctor";
 import { loadMarkdownCard } from "../core/markdown_import";
+import {
+  assertDoctorAllowsCandidateBuild,
+  buildQuarkCandidate,
+} from "../core/quark_candidate";
+import type { ContractDoctorReport } from "../core/quark_candidate";
+import * as fs from "fs";
+import * as path from "path";
+import { spawnSync } from "child_process";
 
 interface ParsedArgs {
   positional: string[];
@@ -130,6 +140,7 @@ function printUsage(): void {
       "  doppel handoff revoke --id <id> [--reason <text>]",
       "  doppel receipt list",
       "  doppel receipt show --id <id>",
+      "  doppel contract build-quark-candidate --type <handoff|fossil> --id <id> --out <file> --confirm [--retention-days <1-30>]",
       "  doppel quark dry-run --type <memory|boundary|project|fossil|handoff> --id <id>",
       "  doppel quark deposit ...   (not implemented in V1 — see docs/quark-integration.md)",
       "  doppel status",
@@ -405,6 +416,110 @@ function cmdReceiptShow(args: ParsedArgs): void {
   process.stdout.write(formatReceiptDetails(receipt));
 }
 
+function contractDoctorPath(): string {
+  const candidates = [
+    path.resolve(__dirname, "../../../scripts/quark-contract-doctor.js"),
+    path.resolve(__dirname, "../../scripts/quark-contract-doctor.js"),
+  ];
+  const doctor = candidates.find((candidate) => fs.existsSync(candidate));
+  if (!doctor) {
+    throw new Error(
+      "contract build-quark-candidate: local Contract Doctor executable was not found"
+    );
+  }
+  return doctor;
+}
+
+function readHealthyContractDoctor(): ContractDoctorReport {
+  const result = spawnSync(process.execPath, [contractDoctorPath(), "--json"], {
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    const detail = result.stderr.trim() || result.stdout.trim() || "unknown doctor failure";
+    throw new Error(
+      `contract build-quark-candidate: Contract Doctor refused the build: ${detail}`
+    );
+  }
+  try {
+    return JSON.parse(result.stdout) as ContractDoctorReport;
+  } catch {
+    throw new Error(
+      "contract build-quark-candidate: Contract Doctor returned invalid JSON"
+    );
+  }
+}
+
+function candidateManifestPath(candidatePath: string): string {
+  const parsed = path.parse(candidatePath);
+  return path.join(parsed.dir, `${parsed.name}.manifest.json`);
+}
+
+function cmdBuildQuarkCandidate(args: ParsedArgs): void {
+  assertAllowedFlags(
+    args,
+    ["type", "id", "out", "confirm", "retention-days"],
+    "contract build-quark-candidate"
+  );
+  if (args.positional.length > 0) {
+    fail(
+      `contract build-quark-candidate: unexpected argument "${args.positional[0]}"`
+    );
+  }
+  const type = flag(args, "type");
+  const id = flag(args, "id");
+  const out = flag(args, "out");
+  if (type !== "handoff" && type !== "fossil") {
+    fail("contract build-quark-candidate: --type must be handoff or fossil");
+  }
+  if (!id) fail("contract build-quark-candidate: --id is required");
+  if (!out) fail("contract build-quark-candidate: --out is required");
+  if (!args.flags.has("confirm")) {
+    fail(
+      "contract build-quark-candidate: refusing local build without --confirm.\n" +
+        "Confirmation approves this bounded projection file only; it grants no transport capability."
+    );
+  }
+  const retentionText = flag(args, "retention-days");
+  const retentionDays = retentionText === undefined ? 30 : Number(retentionText);
+
+  // The builder depends on the Doctor gate. No artifact is loaded and no
+  // output path is created before this report is healthy and contract-locked.
+  const doctor = readHealthyContractDoctor();
+  assertDoctorAllowsCandidateBuild(doctor);
+  const vault = new Vault();
+  const artifact =
+    type === "handoff" ? vault.findHandoff(id) : vault.findCard(id);
+  if (!artifact) {
+    fail(`contract build-quark-candidate: no ${type} found with id "${id}"`);
+  }
+  if (type === "fossil" && artifact.kind !== "fossil_trace") {
+    fail(
+      `contract build-quark-candidate: card "${id}" is ${artifact.kind}, not fossil_trace`
+    );
+  }
+
+  const { candidate, manifest } = buildQuarkCandidate(
+    artifact,
+    type === "handoff" ? "handoff_card" : "fossil_trace",
+    doctor,
+    { retentionDays }
+  );
+  const candidatePath = exportJson(candidate, out);
+  const manifestPath = exportJson(manifest, candidateManifestPath(candidatePath));
+  process.stdout.write(
+    [
+      `Built local Quark candidate: ${candidatePath}`,
+      `Dry-run manifest: ${manifestPath}`,
+      `Contract ID: ${manifest.contract_id}`,
+      `Artifact hash: ${manifest.artifact_content_hash}`,
+      `Artifact size: ${manifest.artifact_size_bytes} bytes`,
+      "Network authorized: false",
+      "No transport, endpoint, credential, or live deposit was used.",
+      "",
+    ].join("\n")
+  );
+}
+
 function cmdQuarkDryRun(args: ParsedArgs): void {
   assertAllowedFlags(args, ["type", "id"], "quark dry-run");
   const type = flag(args, "type");
@@ -553,6 +668,12 @@ function main(): void {
       if (sub === "list") return cmdReceiptList(args);
       if (sub === "show") return cmdReceiptShow(args);
       return fail(`unknown subcommand "receipt ${sub}"`);
+    }
+
+    case "contract": {
+      const args = parseArgs(rest);
+      if (sub === "build-quark-candidate") return cmdBuildQuarkCandidate(args);
+      return fail(`unknown subcommand "contract ${sub}"`);
     }
 
     case "quark": {

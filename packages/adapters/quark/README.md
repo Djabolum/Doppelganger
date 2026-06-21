@@ -3,10 +3,11 @@
 This adapter is the future bridge to Quark-AI
 (`POST /api/quark/intake/continuity`).
 
-**What exists today:** nothing executable. `doppel quark dry-run` lives in
-`packages/cli/index.ts` and builds the deposit envelope (see
-`packages/core/policy.ts::buildContinuityEnvelope`) entirely **locally** — no
-network call, no Quark dependency. It is a preview only.
+**What exists today:** no executable network adapter. `doppel quark dry-run`
+still builds its legacy envelope locally. The separate
+`doppel contract build-quark-candidate` command can now write a candidate
+0.3 deposit plus a dry-run manifest to user-selected local files, but it is
+gated by the Contract Doctor and contains no transport capability.
 
 **What is explicitly deferred, and why:** a real `doppel quark deposit
 --confirm` requires a dedicated continuity intake that does not exist yet on
