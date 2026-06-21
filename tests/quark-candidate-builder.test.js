@@ -195,7 +195,24 @@ test("candidate builder supports fossil traces but rejects other cards", (t) => 
     out,
     "--confirm",
   ]);
-  assert.equal(JSON.parse(fs.readFileSync(out, "utf8")).payload_kind, "fossil_trace");
+  const fossilCandidate = JSON.parse(fs.readFileSync(out, "utf8"));
+  assert.equal(fossilCandidate.payload_kind, "fossil_trace");
+  assert.equal(
+    Object.hasOwn(fossilCandidate.projection.artifact, "content"),
+    false
+  );
+  const fossilCanonical = Buffer.from(
+    canonicalJson(fossilCandidate.projection.artifact),
+    "utf8"
+  );
+  assert.equal(
+    fossilCandidate.projection.content_hash,
+    sha256(fossilCanonical)
+  );
+  assert.equal(
+    fossilCandidate.projection.artifact_size_bytes,
+    fossilCanonical.length
+  );
 
   const memory = run(cwd, ["card", "add", "memory", "--label", "Readable note"]);
   const memoryId = memory.stdout.match(/mem_[0-9a-f]+/)[0];

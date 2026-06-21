@@ -2,6 +2,8 @@
 
 ## Unreleased — Roadmap clarification
 
+- normalized optional `undefined` card fields before candidate hashing so a
+  fossil candidate manifest describes the exact JSON bytes Quark validates
 - added `doppel contract build-quark-candidate` as a Doctor-gated,
   file-only candidate 0.3 builder for validated handoffs and fossil traces;
   it writes a bounded deposit plus local dry-run manifest and has no

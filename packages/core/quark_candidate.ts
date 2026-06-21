@@ -85,6 +85,9 @@ export interface QuarkCandidateDryRunManifest {
 }
 
 export function canonicalJson(value: unknown): string {
+  if (value === undefined) {
+    throw new Error("quark candidate: undefined values must be removed before hashing");
+  }
   if (Array.isArray(value)) {
     return `[${value.map(canonicalJson).join(",")}]`;
   }
@@ -164,7 +167,15 @@ export function buildQuarkCandidate(
     throw new Error("quark candidate: confirmed_at must be an ISO date-time");
   }
 
-  const canonicalArtifact = Buffer.from(canonicalJson(artifact), "utf8");
+  // Hash the exact JSON value that will be written. Vault validators may
+  // retain optional properties as `undefined`, while JSON serialization
+  // omits them. Normalizing first prevents manifest/file divergence.
+  const serializedArtifact = JSON.stringify(artifact);
+  if (serializedArtifact === undefined) {
+    throw new Error("quark candidate: artifact is not JSON serializable");
+  }
+  const boundedArtifact = JSON.parse(serializedArtifact) as HandoffCard | Card;
+  const canonicalArtifact = Buffer.from(canonicalJson(boundedArtifact), "utf8");
   if (canonicalArtifact.length < 1 || canonicalArtifact.length > 16_384) {
     throw new Error(
       `quark candidate: artifact must be 1-16384 bytes (got ${canonicalArtifact.length})`
@@ -177,7 +188,7 @@ export function buildQuarkCandidate(
     source: "doppelganger",
     payload_kind: payloadKind,
     projection: {
-      artifact,
+      artifact: boundedArtifact,
       content_hash: contentHash,
       artifact_size_bytes: canonicalArtifact.length,
     },
