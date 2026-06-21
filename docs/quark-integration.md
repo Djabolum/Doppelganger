@@ -10,6 +10,12 @@ quarantine, scoped authentication, idempotency, status, bilateral receipts,
 deletion/expiry receipts, and a deny-by-default capability model; it is not
 a wrapper around `/fossils`.
 
+Before any client, endpoint, credential, route, or runtime configuration may
+be created, every Construction Gate in
+`docs/network-activation-preconditions-v0.md` must pass through a committed
+bilateral approval record. Network construction and activation are currently
+blocked.
+
 ## Current V2.0-prep status
 
 A local Quark-side continuity intake skeleton exists for validation and

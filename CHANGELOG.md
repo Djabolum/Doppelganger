@@ -2,6 +2,9 @@
 
 ## Unreleased — Roadmap clarification
 
+- specified Network Activation Preconditions V0: twelve bilateral
+  construction gates and a separate activation gate must pass before any
+  continuity client, endpoint, credential, route, or live transport exists
 - normalized optional `undefined` card fields before candidate hashing so a
   fossil candidate manifest describes the exact JSON bytes Quark validates
 - added `doppel contract build-quark-candidate` as a Doctor-gated,
