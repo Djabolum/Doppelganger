@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doppelganger.local/schemas/quark_candidate_dry_run_manifest.schema.json",
+  "title": "Quark Candidate Dry-run Manifest",
+  "description": "Local evidence that a candidate deposit was built without transport capability.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "contract_id",
+    "fixture_version",
+    "payload_schema_version",
+    "payload_kind",
+    "artifact_content_hash",
+    "artifact_size_bytes",
+    "candidate_sha256",
+    "network_authorized",
+    "transport"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "kind": {
+      "const": "quark_candidate_dry_run_manifest"
+    },
+    "contract_id": {
+      "const": "sha256:6f1418e508abbd4e4d4329ef20a6ba6bc972dc0dbca132b299136106291545d9"
+    },
+    "fixture_version": {
+      "const": "candidate-0.3-v0"
+    },
+    "payload_schema_version": {
+      "const": "0.3"
+    },
+    "payload_kind": {
+      "enum": [
+        "handoff_card",
+        "fossil_trace"
+      ]
+    },
+    "artifact_content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifact_size_bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16384
+    },
+    "candidate_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "network_authorized": {
+      "const": false
+    },
+    "transport": {
+      "type": "object",
+      "required": [
+        "http_client_present",
+        "endpoint_configured",
+        "credential_included",
+        "sent"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "http_client_present": {
+          "const": false
+        },
+        "endpoint_configured": {
+          "const": false
+        },
+        "credential_included": {
+          "const": false
+        },
+        "sent": {
+          "const": false
+        }
+      }
+    }
+  }
+}

@@ -72,6 +72,34 @@ npm run contract:doctor -- --json
 The report exposes the contract id, fixture and schema versions, payload and
 artifact hashes, artifact size, and drift checks. A drift exits non-zero.
 
+## Candidate 0.3 local builder
+
+After the Contract Doctor is healthy, Doppelganger can build a candidate 0.3
+deposit as local files:
+
+```bash
+doppel contract build-quark-candidate \
+  --type handoff \
+  --id hnd_... \
+  --out ./dist/quark-candidate.json \
+  --confirm
+```
+
+The command supports validated `handoff_card` and `fossil_trace` objects
+only. It recalculates the canonical artifact hash and byte size, writes the
+candidate file, and writes a sibling dry-run manifest.
+
+The builder runs the Contract Doctor first and refuses before output if the
+Doctor reports drift, network authorization, an unknown Contract ID, or a
+schema mismatch. `--confirm` approves the bounded local projection only; it
+is not transport consent.
+
+The manifest states that no HTTP client, endpoint, credential, or send event
+was present. See `docs/quark-candidate-builder-v0.md`.
+
+The builder is not part of `packages/adapters/quark/`. It cannot contact
+Quark and does not implement `doppel quark deposit`.
+
 ## What exists today (V1 MVP)
 
 `doppel quark dry-run --type <kind> --id <id>` (see
@@ -157,10 +185,10 @@ contains a bounded projection explicitly approved by the user. It grants no
 projection-read, memory, indexing, fossilization, activation, or future-use
 capability.
 
-The V1 dry-run still prints its legacy local `continuity_envelope` with
+The legacy V1 dry-run still prints its local `continuity_envelope` with
 `card_content_included`. That preview is not the candidate 0.3 network
-shape. Before a network adapter can exist, Doppelganger must build and
-validate the candidate 0.3 policy and consent object explicitly.
+shape. The local candidate builder creates the candidate 0.3 policy and
+consent object explicitly, but grants no network capability.
 
 Both shapes preserve the public doctrine: `output != fossil`,
 `memory != structure`, `observation != intervention`.
@@ -169,6 +197,8 @@ Both shapes preserve the public doctrine: `output != fossil`,
 
 - No HTTP client to Quark anywhere in `packages/adapters/quark/`.
 - No `--confirm` path on `doppel quark deposit`.
+- The only candidate `--confirm` path writes a bounded local file and
+  cannot send it.
 - No live transport or network authorization follows from the presence of a
   schema or receiver skeleton.
 - The V2 continuity deposit and receipt schemas exist as strict candidate

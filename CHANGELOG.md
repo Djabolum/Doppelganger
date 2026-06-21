@@ -2,6 +2,10 @@
 
 ## Unreleased — Roadmap clarification
 
+- added `doppel contract build-quark-candidate` as a Doctor-gated,
+  file-only candidate 0.3 builder for validated handoffs and fossil traces;
+  it writes a bounded deposit plus local dry-run manifest and has no
+  transport capability
 - added a local Contract Doctor report for contract id, fixture/schema
   versions, hashes, artifact size, and drift status without network access
 - added a cross-repository contract lock that rejects unversioned fixture,
