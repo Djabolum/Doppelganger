@@ -62,6 +62,16 @@ drift before files are written.
 
 It does not contact Quark and is not a `doppel quark deposit` implementation.
 
+The same local state can be inspected without writing a bundle:
+
+```bash
+npm run contract:doctor
+npm run contract:doctor -- --json
+```
+
+The report exposes the contract id, fixture and schema versions, payload and
+artifact hashes, artifact size, and drift checks. A drift exits non-zero.
+
 ## What exists today (V1 MVP)
 
 `doppel quark dry-run --type <kind> --id <id>` (see

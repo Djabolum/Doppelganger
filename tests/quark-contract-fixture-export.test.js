@@ -8,6 +8,7 @@ const test = require("node:test");
 
 const ROOT = path.resolve(__dirname, "..");
 const SCRIPT = path.join(ROOT, "scripts/export-quark-contract-fixture.js");
+const LIBRARY = path.join(ROOT, "scripts/lib/quark-contract.js");
 
 function runExport(outputDirectory) {
   return spawnSync(process.execPath, [SCRIPT, "--output", outputDirectory], {
@@ -17,7 +18,10 @@ function runExport(outputDirectory) {
 }
 
 test("Quark contract fixture export is deterministic and network-disabled", (t) => {
-  const scriptSource = fs.readFileSync(SCRIPT, "utf8");
+  const scriptSource = [
+    fs.readFileSync(SCRIPT, "utf8"),
+    fs.readFileSync(LIBRARY, "utf8"),
+  ].join("\n");
   for (const forbiddenModule of [
     "node:http",
     "node:https",
@@ -97,9 +101,14 @@ test("Quark contract fixture export fails closed on unversioned drift", (t) => {
     "continuity_contract_lock.json"
   );
   fs.mkdirSync(path.dirname(sandboxScript), { recursive: true });
+  fs.mkdirSync(path.join(sandbox, "scripts", "lib"), { recursive: true });
   fs.mkdirSync(path.dirname(sandboxExample), { recursive: true });
   fs.mkdirSync(path.dirname(sandboxLock), { recursive: true });
   fs.copyFileSync(SCRIPT, sandboxScript);
+  fs.copyFileSync(
+    LIBRARY,
+    path.join(sandbox, "scripts", "lib", "quark-contract.js")
+  );
   fs.copyFileSync(
     path.join(ROOT, "examples/quark_deposit/continuity_deposit.json"),
     sandboxExample
@@ -141,6 +150,7 @@ test("Quark contract fixture export rejects unversioned schema drift", (t) => {
 
   for (const relative of [
     "scripts/export-quark-contract-fixture.js",
+    "scripts/lib/quark-contract.js",
     "examples/quark_deposit/continuity_deposit.json",
     "schemas/continuity_deposit.schema.json",
     "contracts/quark/continuity_contract_lock.json",
