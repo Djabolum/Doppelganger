@@ -10,10 +10,10 @@ grows.
 
 | Version | Supported |
 |---|---|
-| `0.1.x` (V1 MVP) | Yes — current development line |
+| `0.1.x` (V1.1 local-first toolkit) | Yes — current release line |
 
-There is no stable release yet. Until a `1.0.0` tag exists, security fixes
-land on the active development branch.
+The project remains pre-1.0. Security fixes land on the active `0.1.x`
+release line.
 
 ## Reporting a vulnerability
 
@@ -85,10 +85,8 @@ would report any other vulnerability.
 
 ## Quark-AI integration status
 
-`doppel quark dry-run` builds a deposit preview entirely locally and makes
-no network call. `doppel quark deposit` is **not implemented** — it exits
-1 with an explanation — because the Quark-AI backend does not yet expose
-the intake endpoints a real deposit would need. There is no code path in
-this repository today that sends vault content to Quark-AI, or to any
-other host, over the network. See `docs/quark-integration.md` for the
-full status and the planned envelope once that changes.
+The Contract Doctor, candidate builder, fixture exporter, and
+`doppel quark dry-run` operate entirely on local files. `doppel quark
+deposit` is **not implemented** and exits 1 with an explanation. There is
+no code path in this release that sends vault content to Quark-AI, or to any
+other host, over the network. See `docs/quark-integration.md`.

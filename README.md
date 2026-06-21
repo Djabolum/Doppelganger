@@ -18,15 +18,17 @@ It prepares contexts, boundaries, and exchanges that you choose to share with an
 - Build scoped context packs
 - Prepare handoff cards between AI assistants
 - Write trust receipts
-- Preview (dry-run only, no network call) what an optional deposit into
-  Quark-AI would contain — a real deposit is not implemented yet, see
-  Status below
+- Import validated Markdown/Notion-like card drafts
+- Build bounded candidate 0.3 files for local verification
+- Inspect contract identity, hashes, size, and drift locally
 
 ## What it does not do
 
 - It does not connect your AI accounts
 - It does not scrape conversations
-- It does not upload by default
+- It does not contain a network client or upload path
+- It does not configure an endpoint or credential
+- It does not perform a live Quark deposit
 - It does not create an autonomous agent
 - It does not treat memory as truth
 
@@ -43,41 +45,41 @@ See `docs/doctrine.md` for the full list of ten invariants.
 ## Quickstart
 
 ```bash
-npm install
-npm run build
+npm install --global @djabolum/doppelganger
 
-node dist/packages/cli/index.js init
+doppel init
 
-node dist/packages/cli/index.js card add memory \
+doppel card add memory \
   --label "Response style" \
   --content "Answer in layers, avoid generic replies."
 
-node dist/packages/cli/index.js card add boundary \
+doppel card add boundary \
   --label "No diagnosis" \
   --content "Do not turn my traces or emotions into a diagnosis."
 
 # `fossil` is the short CLI alias for the internal kind `fossil_trace`.
 # Fossil traces carry a short pattern label, never narrative `--content`.
-node dist/packages/cli/index.js card add fossil \
+doppel card add fossil \
   --label "Trace de passage"
 
-node dist/packages/cli/index.js card import \
+# Validate a Markdown card file you created or exported locally
+doppel card import \
   --from markdown \
-  --file ./examples/notion-like/cards.md \
+  --file ./cards.md \
   --dry-run
 
-node dist/packages/cli/index.js context build --scope minimal --target claude
-node dist/packages/cli/index.js context build --scope minimal --target chatgpt --format json
+doppel context build --scope minimal --target claude
+doppel context build --scope minimal --target chatgpt --format json
 
-node dist/packages/cli/index.js status
-node dist/packages/cli/index.js doctor
+doppel status
+doppel doctor
 
 # Remove a local card while keeping a revocation audit record
-node dist/packages/cli/index.js card revoke --id <card_id>
+doppel card revoke --id <card_id>
 ```
 
-Once installed globally (or linked), the same commands run as `doppel init`,
-`doppel card add ...`, `doppel context build ...`.
+For repository development, use `npm install`, `npm run build`, and
+`node dist/packages/cli/index.js ...`.
 
 See `examples/minimal/` for the manifest, cards, and context pack this
 produces, `docs/field-cases.md` for realistic usage paths, and
@@ -98,10 +100,13 @@ assistants, and a strict local Markdown importer. Notion-like exports enter
 only through Doppelganger validation; the boundary is documented in
 `docs/markdown-card-import.md`.
 
-Next: Quark Intake contract. No implementation is authorized before the
-bilateral specification is approved. The current candidate is
-`docs/quark-intake-contract-v0.3.md`; Doppelganger will not map continuity
-into an unrelated storage interface.
+Candidate 0.3 tooling is local verification only. The Contract Doctor,
+fixture exporter, and `doppel contract build-quark-candidate` command write
+or inspect local files; they do not contact Quark. `doppel quark deposit`
+remains an explicit refusal.
+
+Network construction and activation remain blocked by
+`docs/network-activation-preconditions-v0.md`.
 
 The long-term layering is deliberate: writing surfaces write, Doppelganger
 bounds, and receiving hosts receive. Official Notion, browser, and MCP
@@ -129,8 +134,8 @@ npm test
 ```
 
 The suite covers vault tampering, malformed JSON, scope isolation, mandatory
-receipts, revocation, filesystem permissions, CLI flag validation, and exact
-Quark dry-run disclosure.
+receipts, revocation, filesystem permissions, CLI flag validation, local
+candidate construction, and contract drift.
 
 ## License
 

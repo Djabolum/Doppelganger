@@ -1,7 +1,12 @@
 # Changelog
 
-## Unreleased — Roadmap clarification
+## 0.1.1 — 2026-06-21 — V1.1 Frozen local-first toolkit
 
+- prepared the first installable public CLI package under
+  `@djabolum/doppelganger`; the unscoped npm name belongs to an unrelated
+  project
+- added a strict package whitelist containing compiled CLI/runtime files,
+  public schemas, contracts, examples, and documentation only
 - specified Network Activation Preconditions V0: twelve bilateral
   construction gates and a separate activation gate must pass before any
   continuity client, endpoint, credential, route, or live transport exists

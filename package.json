@@ -1,19 +1,45 @@
 {
-  "name": "doppelganger",
+  "name": "@djabolum/doppelganger",
   "version": "0.1.1",
-  "description": "A local-first continuity toolkit for carrying user-approved AI context between assistants.",
+  "description": "A local-first continuity toolkit for user-approved context, handoffs, receipts, and bounded offline contract validation.",
   "license": "Apache-2.0",
+  "author": "Djabolum",
   "repository": {
     "type": "git",
     "url": "https://github.com/Djabolum/Doppelganger.git"
   },
-  "private": true,
+  "homepage": "https://github.com/Djabolum/Doppelganger#readme",
+  "bugs": {
+    "url": "https://github.com/Djabolum/Doppelganger/issues"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "context",
+    "continuity",
+    "handoff",
+    "local-first",
+    "offline",
+    "receipts"
+  ],
   "type": "commonjs",
   "bin": {
     "doppel": "./dist/packages/cli/index.js"
   },
+  "files": [
+    "dist/",
+    "scripts/",
+    "schemas/",
+    "contracts/quark/",
+    "examples/",
+    "docs/",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
     "test": "npm run build && node --test tests",
     "contract:doctor": "node scripts/quark-contract-doctor.js",
     "export:quark-contract-fixture": "node scripts/export-quark-contract-fixture.js",
@@ -26,5 +52,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
