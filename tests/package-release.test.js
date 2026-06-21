@@ -10,7 +10,7 @@ const packageJson = JSON.parse(
 
 test("public package metadata preserves the local-only release boundary", () => {
   assert.equal(packageJson.name, "@djabolum/doppelganger");
-  assert.equal(packageJson.version, "0.1.1");
+  assert.equal(packageJson.version, "0.1.2");
   assert.equal(packageJson.private, undefined);
   assert.deepEqual(packageJson.publishConfig, { access: "public" });
   assert.deepEqual(packageJson.bin, {

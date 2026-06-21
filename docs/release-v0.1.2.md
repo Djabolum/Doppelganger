@@ -1,4 +1,4 @@
-# Doppelganger v0.1.1 — V1.1 Frozen
+# Doppelganger v0.1.2 — V1.1 Frozen
 
 A local-first continuity toolkit for user-approved context, handoffs,
 receipts, and bounded Quark candidate validation. No network transport.
@@ -40,3 +40,7 @@ npm pack --dry-run
 
 The packed tarball is also installed into an empty directory and verified
 through `npx doppel --help` and `npx doppel doctor`.
+
+Version `0.1.1` was not published to npm. The first registry publication was
+bumped to `0.1.2` so the package metadata preserves the installed `doppel`
+binary without npm normalization.
