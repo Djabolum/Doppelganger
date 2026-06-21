@@ -14,7 +14,7 @@ test("public package metadata preserves the local-only release boundary", () => 
   assert.equal(packageJson.private, undefined);
   assert.deepEqual(packageJson.publishConfig, { access: "public" });
   assert.deepEqual(packageJson.bin, {
-    doppel: "./dist/packages/cli/index.js",
+    doppel: "dist/packages/cli/index.js",
   });
   assert.equal(packageJson.scripts.prepack, "npm run build");
   assert.deepEqual(packageJson.files, [

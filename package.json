@@ -6,7 +6,7 @@
   "author": "Djabolum",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Djabolum/Doppelganger.git"
+    "url": "git+https://github.com/Djabolum/Doppelganger.git"
   },
   "homepage": "https://github.com/Djabolum/Doppelganger#readme",
   "bugs": {
@@ -24,7 +24,7 @@
   ],
   "type": "commonjs",
   "bin": {
-    "doppel": "./dist/packages/cli/index.js"
+    "doppel": "dist/packages/cli/index.js"
   },
   "files": [
     "dist/",
